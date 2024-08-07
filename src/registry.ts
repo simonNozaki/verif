@@ -1,4 +1,4 @@
-import { readdirSync } from 'fs'
+import { readdirSync, lstatSync } from 'fs'
 import { isVueFile, toLowerCase, VueFileName } from './util'
 import { VueFile } from './vue-file'
 import { consola } from 'consola'
@@ -40,12 +40,17 @@ export class DefaultComponentsRegistry implements ComponentRegistry {
 }
 
 /**
- * 引数のディレクトリパスを再帰的にたどって、Vueファイルの名前とパスのオブジェクトを返す
+ * Return Vue file name and path walking along to a directory path of argument
  */
 function readDirDeepSync(pathLike: string, results: ComponentDictionary = {}): ComponentDictionary {
   if (isVueFile(pathLike)) {
     const componentKey = VueFile.fromOriginal(pathLike).componentKey
     results[componentKey] = pathLike
+    return
+  }
+
+  // Exclude non-Vue file
+  if (lstatSync(pathLike).isFile()) {
     return
   }
 
