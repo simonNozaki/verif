@@ -3,7 +3,7 @@ import fs from 'fs'
 import path from 'path'
 import consola from 'consola'
 
-type ContentType = 'text/html' | 'application/javascript'
+type ContentType = 'text/html' | 'application/javascript' | 'text/css'
 
 /**
  * Write static file by a path and content-type.
@@ -30,13 +30,22 @@ const server = http.createServer((req, res) => {
       res
     )
   }
+  else if (req.url?.match(/\/*.css/)) {
+    const strs = req.url.split('/')
+    const css = strs[strs.length - 1]
+    writeStatic(
+      path.join(__dirname, css),
+      'text/css',
+      res
+    )
+  }
   // Ignore unknown paths
 })
 
 function startServer(completedHandler: () => void): void {
   server.listen(38081)
     .on('listening', () => {
-      consola.info('Graph visualizing server listening on port 38081.')
+      consola.info('Graph is served on  http://localhost:38081.')
     })
   process.on('SIGTERM', () => {
     completedHandler()
