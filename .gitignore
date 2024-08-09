@@ -3,4 +3,5 @@
 node_modules/
 dist/
 
-cy.js
+# Exclude output js
+cy.client.js
