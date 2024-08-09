@@ -3,7 +3,6 @@ import { Node } from '../node'
 import { DefaultComponentsRegistry } from '../registry'
 import { vueFileNameOrThrow } from '../util'
 import { createPrinter, printerTypeOrThrow } from '../printer'
-import { VueFile } from '../vue-file'
 import { GraphLoader } from '../graph-loader'
 import { consola } from 'consola'
 
@@ -39,11 +38,11 @@ export default defineCommand({
     consola.start(`Start explore "${vueFileName}" dependencies from a directory "${componentsDir}".`)
 
     // Set the root node to the registry to look self up from it
+    // Sometimes there are several `index.vue`, so identify root unique by absolute path
     const registry = new DefaultComponentsRegistry(componentsDir)
-    const vueFile = VueFile.fromOriginal(fileName)
-    registry.set(vueFile.componentKey, vueFileName)
+    registry.set(vueFileName, vueFileName)
 
-    const rootNode = new Node(vueFile.componentKey)
+    const rootNode = new Node(vueFileName)
     new GraphLoader(registry).load(rootNode)
 
     createPrinter(registry, printerType)

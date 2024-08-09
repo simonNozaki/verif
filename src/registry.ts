@@ -1,15 +1,14 @@
 import { readdirSync, lstatSync } from 'fs'
-import { isVueFile, toLowerCase, VueFileName } from './util'
-import { VueFile } from './vue-file'
+import { isVueFile, VueFileName } from './util'
 import { consola } from 'consola'
 
-export type ComponentKey = keyof ComponentDictionary & Lowercase<string>
+export type ComponentKey = keyof ComponentDictionary & string
 
 /**
  * The object maintaining data that has the format `lowercase component name: a file path`.
  */
 interface ComponentDictionary {
-  [k: Lowercase<string>]: VueFileName
+  [k: string]: VueFileName
 }
 
 let components: ComponentDictionary = {}
@@ -34,8 +33,7 @@ export class DefaultComponentsRegistry implements ComponentRegistry {
     return components[key]
   }
   set(key: string, value: VueFileName): void {
-    // Dare to accept all lowercase strings
-    components[(toLowerCase(key))] = value
+    components[key] = value
   }
 }
 
@@ -44,8 +42,10 @@ export class DefaultComponentsRegistry implements ComponentRegistry {
  */
 function readDirDeepSync(pathLike: string, results: ComponentDictionary = {}): ComponentDictionary {
   if (isVueFile(pathLike)) {
-    const componentKey = VueFile.fromOriginal(pathLike).componentKey
-    results[componentKey] = pathLike
+    const paths = pathLike.split('/')
+    const componentName = paths[paths.length - 1].replace('.vue', '')
+    // format ... Card: 'example/Card.vue'
+    results[componentName] = pathLike
     return
   }
 
@@ -54,7 +54,6 @@ function readDirDeepSync(pathLike: string, results: ComponentDictionary = {}): C
     return
   }
 
-  // 現在いる階層から下の階層をたどってパスをすべて探す
   const pathNames = readdirSync(pathLike)
   pathNames.forEach((path) => readDirDeepSync(`${pathLike}/${path}`, results))
 

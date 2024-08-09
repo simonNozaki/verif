@@ -5,6 +5,9 @@ import { VisualGraphPrinter } from './printers/visual-graph-printer'
 
 type PrinterType = 'stdout' | 'graph'
 
+/**
+ * Assert and safe cast to `PrinterType`
+ */
 export function printerTypeOrThrow(type: string): PrinterType {
   if (type === 'stdout' || type === 'graph') {
     return type as PrinterType
