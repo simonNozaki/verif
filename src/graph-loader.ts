@@ -14,6 +14,8 @@ export class GraphLoader {
     const vueContentBuf = readFileSync(filePath)
     // Extract template source and convert to AST elements
     const { template } = parseComponent(vueContentBuf.toString())
+    if(!template) return
+
     const { ast } = compile(template.content)
     const tags = [
       ast.tag,
