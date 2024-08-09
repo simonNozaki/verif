@@ -8,12 +8,9 @@ body, h1, h2, h3, h4, h5, h6, p, blockquote {
   margin: 0;
 }
 
-html {
-  background-color: #00ac97
-}
-
 .graph-area {
   margin: 24px;
+  font-weight: medium;
 }
 
 .graph-title {
