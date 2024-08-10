@@ -2,6 +2,7 @@ import * as http from 'http'
 import fs from 'fs'
 import path from 'path'
 import consola from 'consola'
+import { __dirname, toStaticPath } from '../../util'
 
 type ContentType = 'text/html' | 'application/javascript' | 'text/css'
 
@@ -19,13 +20,13 @@ function writeStatic(fileName: string, contentType: ContentType, res: http.Serve
 const server = http.createServer((req, res) => {
   if (req.url === '/' || req.url === '/index.html') {
     writeStatic(
-      path.join(__dirname, 'index.html'),
+      path.join(toStaticPath('index.html')),
       'text/html',
       res
     )
   } else if (req.url === '/cy.client.js') {
     writeStatic(
-      path.join(__dirname, 'cy.client.js'),
+      path.join(toStaticPath('cy.client.js')),
       'application/javascript',
       res
     )
@@ -34,7 +35,7 @@ const server = http.createServer((req, res) => {
     const strs = req.url.split('/')
     const css = strs[strs.length - 1]
     writeStatic(
-      path.join(__dirname, css),
+      path.join(toStaticPath(css)),
       'text/css',
       res
     )

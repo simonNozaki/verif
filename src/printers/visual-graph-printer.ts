@@ -7,7 +7,7 @@ import { ElementDefinition, NodeDefinition } from 'cytoscape'
 import startServer from './graph-server/server'
 import { ComponentRegistry } from 'src/registry'
 import { VueFile } from '../vue-file'
-import { VueFileName } from '../util'
+import { VueFileName, toStaticPath } from '../util'
 
 /**
  * Create data representing a node
@@ -33,13 +33,13 @@ function createEdgeDef(source: VueFileName, target: VueFileName): NodeDefinition
 
 function writeJavaScript(data: any[]): void {
   // TODO: ファイルの読み書きを待たない
-  const template = fs.readFileSync(path.join(__dirname, 'graph-server', 'cy.client.js.template'))
+  const template = fs.readFileSync(toStaticPath('cy.client.js.template'))
 
   const output = Mustache.render(template.toString(), {
     elements: JSON.stringify(data)
   })
 
-  const jsPath = path.join(__dirname, 'graph-server', 'cy.client.js')
+  const jsPath = path.join('cy.client.js')
 
   if (fs.existsSync(jsPath)) {
     fs.rmSync(jsPath)
