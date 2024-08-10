@@ -38,7 +38,8 @@ export class DefaultComponentsRegistry implements ComponentRegistry {
 }
 
 /**
- * Return Vue file name and path walking along to a directory path of argument
+ * Return Vue file name and path walking along to a directory path of argument.
+ * Read only `.vue` file or directories.
  */
 function readDirDeepSync(pathLike: string, results: ComponentDictionary = {}): ComponentDictionary {
   if (isVueFile(pathLike)) {

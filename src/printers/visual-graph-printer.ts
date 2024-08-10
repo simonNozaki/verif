@@ -1,10 +1,9 @@
 import Mustache from 'mustache'
-import path from 'path'
 import fs from 'fs'
 import { Printer } from '../printer'
 import { Node } from '../node'
 import { ElementDefinition, NodeDefinition } from 'cytoscape'
-import startServer from './graph-server/server'
+import { GraphServer } from './graph-server/server'
 import { ComponentRegistry } from 'src/registry'
 import { VueFile } from '../vue-file'
 import { VueFileName, toStaticPath } from '../util'
@@ -39,7 +38,7 @@ function writeJavaScript(data: any[]): void {
     elements: JSON.stringify(data)
   })
 
-  const jsPath = path.join('cy.client.js')
+  const jsPath = toStaticPath('cy.client.js')
 
   if (fs.existsSync(jsPath)) {
     fs.rmSync(jsPath)
@@ -57,7 +56,8 @@ export class VisualGraphPrinter implements Printer {
 
     writeJavaScript(elements)
 
-    startServer(this.completedHandler)
+    this.completedHandler()
+    new GraphServer().start()
   }
 
   onCompleted(handler: () => void): this {

@@ -5,6 +5,7 @@ import { vueFileNameOrThrow } from '../util'
 import { createPrinter, printerTypeOrThrow } from '../printer'
 import { GraphLoader } from '../graph-loader'
 import { consola } from 'consola'
+import { colorize } from 'consola/utils'
 
 export default defineCommand({
   meta: {
@@ -24,7 +25,6 @@ export default defineCommand({
     },
     format: {
       type: 'string',
-      required: false,
       default: 'graph'
     }
   },
@@ -35,7 +35,9 @@ export default defineCommand({
     const printerType = printerTypeOrThrow(format)
     const vueFileName = vueFileNameOrThrow(fileName)
 
-    consola.start(`Start explore "${vueFileName}" dependencies from a directory "${componentsDir}".`)
+    consola.info(
+      `Exploring "${colorize('blue', vueFileName)}" dependencies from "${colorize('blue', componentsDir)}"`
+    )
 
     // Set the root node to the registry to look self up from it
     // Sometimes there are several `index.vue`, so identify root unique by absolute path
@@ -47,7 +49,7 @@ export default defineCommand({
 
     createPrinter(registry, printerType)
       .onCompleted(() => {
-        consola.start(`End explore "${vueFileName}" dependencies from a directory "${componentsDir}".`)
+        consola.success(colorize('green', `Analysis succeeded for: ${vueFileName}`))
       })
       .print(rootNode)
   },

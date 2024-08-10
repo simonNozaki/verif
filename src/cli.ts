@@ -1,11 +1,12 @@
 import { defineCommand, runMain as _runMain } from 'citty'
 import { commands } from './commands'
+import { name, version, description } from '../package.json'
 
 const main = defineCommand({
   meta: {
-    name: 'verif',
-    version: '0.0.1',
-    description: 'Components dependences analyzer for Vue 2',
+    name,
+    version,
+    description,
   },
   subCommands: commands
 });
