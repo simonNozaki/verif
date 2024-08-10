@@ -14,9 +14,10 @@ body, h1, h2, h3, h4, h5, h6, p, blockquote {
 }
 
 .graph-title {
-  color: #dddddd;
-  border-bottom: 1px solid #dddddd;
+  color: #666666;
+  border-bottom: 1px solid #666666;
   padding: 4px;
+  font-weight: normal;
 }
 
 #cy {

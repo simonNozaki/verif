@@ -1,4 +1,16 @@
 import { consola } from 'consola'
+import { fileURLToPath } from 'node:url'
+import path from 'path'
+const __filename = fileURLToPath(import.meta.url)
+// Compatible for Node.js < 20
+export const __dirname = path.dirname(__filename)
+
+/**
+ * Resolve a path to `static` directory.
+ */
+export function toStaticPath(_path: string): string {
+  return path.join(__dirname, 'static', _path)
+}
 
 /**
  * Convert to lowercase then cast `Lowercase`

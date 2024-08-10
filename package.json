@@ -1,32 +1,44 @@
 {
   "name": "verif",
   "description": "Vue component dependency analyzer",
-  "version": "0.0.0",
-  "main": "index.js",
+  "version": "0.0.1",
   "license": "MIT",
   "private": false,
   "bin": {
-    "verif": "./bin/verif"
+    "verif": "./bin/verif.mjs"
   },
   "engines": {
     "node": ">=18"
   },
-  "files": ["bin", "dist"],
+  "files": [
+    "bin",
+    "dist"
+  ],
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "main": "./dist/index.cjs",
+  "types": "./dist/index.d.ts",
   "scripts": {
-    "build": "npx tsc",
+    "build": "npx unbuild",
     "dev": "npx jiti playground/cli.ts"
   },
   "dependencies": {
-    "@types/cytoscape": "^3.21.5",
-    "@types/mustache": "^4.2.5",
     "citty": "^0.1.6",
     "consola": "^3.2.3",
     "cytoscape": "^3.30.1",
     "mustache": "^4.2.0",
+    "unbuild": "3.0.0-rc.7",
     "vue": "2.7.16",
     "vue-template-compiler": "^2.7.16"
   },
   "devDependencies": {
+    "@types/cytoscape": "^3.21.5",
+    "@types/mustache": "^4.2.5",
     "@types/node": "^20.14.12",
     "jiti": "^1.21.6",
     "typescript": "^5.5.4"
