@@ -1,5 +1,5 @@
-import { ComponentKey } from './registry'
-import { VueFileName, isVueFile } from './util'
+import type { ComponentKey } from './registry'
+import { type VueFileName, isVueFile } from './util'
 import { consola } from 'consola'
 
 /**

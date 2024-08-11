@@ -1,12 +1,12 @@
 import Mustache from 'mustache'
-import fs from 'fs'
-import { Printer } from '../printer'
-import { Node } from '../node'
-import { ElementDefinition, NodeDefinition } from 'cytoscape'
+import fs from 'node:fs'
+import type { Printer } from '../printer'
+import type { Node } from '../node'
+import type { ElementDefinition, NodeDefinition } from 'cytoscape'
 import { GraphServer } from './graph-server/server'
-import { ComponentRegistry } from 'src/registry'
+import type { ComponentRegistry } from 'src/registry'
 import { VueFile } from '../vue-file'
-import { VueFileName, toStaticPath } from '../util'
+import { type VueFileName, toStaticPath } from '../util'
 
 /**
  * Create data representing a node
@@ -30,7 +30,7 @@ function createEdgeDef(source: VueFileName, target: VueFileName): NodeDefinition
   }
 }
 
-function writeJavaScript(data: any[]): void {
+function writeJavaScript(data: ElementDefinition[]): void {
   // TODO: ファイルの読み書きを待たない
   const template = fs.readFileSync(toStaticPath('cy.client.js.template'))
 

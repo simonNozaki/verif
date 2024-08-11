@@ -1,20 +1,20 @@
-import { ComponentKey, ComponentRegistry } from './registry';
-import { Edge, Node } from './node';
-import { readFileSync } from 'fs';
-import { parseComponent, compile, ASTNode } from 'vue-template-compiler';
+import type { ComponentKey, ComponentRegistry } from './registry';
+import { type Edge, Node } from './node';
+import { readFileSync } from 'node:fs';
+import { parseComponent, compile, type ASTNode } from 'vue-template-compiler';
 
 /**
  * Graph loader starting from a root node
  */
 export class GraphLoader {
-  constructor(private registry: ComponentRegistry) {}
+  constructor(private registry: ComponentRegistry) { }
 
   load(node: Node) {
     const filePath = this.registry.get(node.name)
     const vueContentBuf = readFileSync(filePath)
     // Extract template source and convert to AST elements
     const { template } = parseComponent(vueContentBuf.toString())
-    if(!template) return
+    if (!template) return
 
     const { ast } = compile(template.content)
     const tags = [
@@ -29,9 +29,11 @@ export class GraphLoader {
         return acc
       }, {} as Edge)
 
-    if(Object.entries(edges).length > 0) {
+    if (Object.entries(edges).length > 0) {
       node.addEdges(edges)
-      Object.entries(node.edges).forEach(([_, edge]) => this.load(edge))
+      for (const pair of Object.entries(node.edges)) {
+        this.load(pair[1])
+      }
     }
   }
 
@@ -39,7 +41,7 @@ export class GraphLoader {
    * Extract tag names walking along to all nodes recursively
    */
   private traverseTag(astNodes: ASTNode[], tags: string[] = []) {
-    astNodes.forEach((an) => {
+    for (const an of astNodes) {
       if (an.type !== 1) return
 
       if (an.children.length > 0) {
@@ -47,7 +49,8 @@ export class GraphLoader {
       }
 
       tags.push(an.tag)
-    })
+    }
+
     return tags
   }
 }

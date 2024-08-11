@@ -1,5 +1,5 @@
-import { readdirSync, lstatSync } from 'fs'
-import { isVueFile, VueFileName } from './util'
+import { readdirSync, lstatSync } from 'node:fs'
+import { isVueFile, type VueFileName } from './util'
 import { consola } from 'consola'
 
 export type ComponentKey = keyof ComponentDictionary & string
@@ -56,7 +56,9 @@ function readDirDeepSync(pathLike: string, results: ComponentDictionary = {}): C
   }
 
   const pathNames = readdirSync(pathLike)
-  pathNames.forEach((path) => readDirDeepSync(`${pathLike}/${path}`, results))
+  for (const path of pathNames) {
+    readDirDeepSync(`${pathLike}/${path}`, results)
+  }
 
   return results
 }

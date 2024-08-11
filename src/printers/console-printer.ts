@@ -1,6 +1,6 @@
-import { ComponentRegistry } from '../registry'
-import { type Printer } from '../printer'
-import { Node } from '../node'
+import type { ComponentRegistry } from '../registry'
+import type { Printer } from '../printer'
+import type { Node } from '../node'
 
 export class ConsolePrinter implements Printer {
   private completedHandler: () => void
@@ -21,7 +21,7 @@ export class ConsolePrinter implements Printer {
   /**
    * Output the file name along to child nodes recursively
    */
-  private println(node: Node, depth: number = 0) {
+  private println(node: Node, depth = 0) {
     // ファイルパスからファイル名だけを取り出す
     const fileDirs = this.registry.get(node.name).split('/')
     const fileName = fileDirs[fileDirs.length - 1]
@@ -36,7 +36,7 @@ export class ConsolePrinter implements Printer {
     }
   }
 
-  private padNth(times: number = 1) {
+  private padNth(times = 1) {
     let paddings = ''
     for (let i = 0; i < times; i++) {
       paddings += '  '
