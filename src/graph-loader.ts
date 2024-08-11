@@ -42,7 +42,7 @@ export class GraphLoader {
    */
   private traverseTag(astNodes: ASTNode[], tags: string[] = []) {
     for (const an of astNodes) {
-      if (an.type !== 1) return
+      if (an.type !== 1) continue
 
       if (an.children.length > 0) {
         this.traverseTag(an.children, tags)
