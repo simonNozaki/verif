@@ -25,7 +25,8 @@
   "types": "./dist/index.d.ts",
   "scripts": {
     "build": "npx unbuild",
-    "dev": "npx jiti playground/cli.ts"
+    "dev": "npx jiti playground/cli.ts",
+    "lint": "npx biome lint"
   },
   "dependencies": {
     "citty": "^0.1.6",
@@ -37,6 +38,7 @@
     "vue-template-compiler": "^2.7.16"
   },
   "devDependencies": {
+    "@biomejs/biome": "1.8.3",
     "@types/cytoscape": "^3.21.5",
     "@types/mustache": "^4.2.5",
     "@types/node": "^20.14.12",

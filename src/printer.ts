@@ -1,5 +1,5 @@
-import { Node } from './node'
-import { ComponentRegistry } from './registry'
+import type { Node } from './node'
+import type { ComponentRegistry } from './registry'
 import { ConsolePrinter } from './printers'
 import { VisualGraphPrinter } from './printers/visual-graph-printer'
 

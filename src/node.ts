@@ -1,4 +1,4 @@
-import { ComponentKey } from './registry'
+import type { ComponentKey } from './registry'
 
 export type Edge = { [k: string]: Node }
 

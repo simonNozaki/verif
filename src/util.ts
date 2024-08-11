@@ -1,6 +1,6 @@
 import { consola } from 'consola'
 import { fileURLToPath } from 'node:url'
-import path from 'path'
+import path from 'node:path'
 const __filename = fileURLToPath(import.meta.url)
 // Compatible for Node.js < 20
 export const __dirname = path.dirname(__filename)
