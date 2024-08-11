@@ -1,29 +1,34 @@
-# verif
+# Vurif
 
-Component dependency Analyzer for Vue.js 2.
+> Component dependency Analyzer for Vue.js 2.
+
+Analysis CLI tool for dependency graph.
+
+- Analyze dependency from a page through directory
+- Visualize dependency by graph
+- Works only Vue.js 2.
 
 ## Usage
 
+### Install
+
 ```bash
-./bin/verif load example/App.vue example
+# Global install as CLI tooling
+npm i -g vurif
 ```
 
-Verif output dependency analysis by standard out or visual graph.
+### Analysis
+
+```bash
+vurif load <vue-file> <components-dir>
+# vurif load example/App.vue example
+```
+
+Subcommands has only `load` currently. See also `vurif --help`
+
+Vurif output dependency analysis by standard out or visual graph.
 
 ![graph](./docs/graph-image.png)
-
-```
-> ./bin/verif --help
-Components dependences analyzer for Vue 2 (verif v0.0.1)                                                                                                                                                                                                                        9:09:46
-
-USAGE verif load
-
-COMMANDS
-
-  load    Load dependency graph from a single Vue file source.
-
-Use verif <command> --help for more information about a command.
-```
 
 ### Options
 
@@ -35,7 +40,8 @@ Available option sets:
 
 ## Development
 
-- Requirements: Node.js >=18
+Requirements: Node.js >=18
+
 - Enable corepack: `corepack enable`
 - Install dependencies: `pnpm install`
-- Build: `pnpm build`
+- Execute locally: `pnpm dev load example/App.vue example/`

@@ -1,11 +1,11 @@
 {
-  "name": "verif",
-  "description": "Vue component dependency analyzer",
+  "name": "vurif",
+  "description": "Vue component dependency analyzer for Vue.js 2",
   "version": "0.0.1",
   "license": "MIT",
   "private": false,
   "bin": {
-    "verif": "./bin/verif.mjs"
+    "vurif": "./bin/vurif.mjs"
   },
   "engines": {
     "node": ">=18"
@@ -21,7 +21,6 @@
       "require": "./dist/index.cjs"
     }
   },
-  "main": "./dist/index.cjs",
   "types": "./dist/index.d.ts",
   "scripts": {
     "build": "npx unbuild",

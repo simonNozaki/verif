@@ -16,12 +16,12 @@ export default defineCommand({
     pageFileName: {
       type: 'positional',
       required: true,
-      description: 'Root file name to load. Verif start loading from this file'
+      description: 'Root file name to load. Vurif start loading from this file'
     },
     componentsDir: {
       type: 'positional',
       required: true,
-      description: '"verif" target directory to load'
+      description: '"vurif" target directory to load'
     },
     format: {
       type: 'string',
