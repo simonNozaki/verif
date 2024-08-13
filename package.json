@@ -1,10 +1,13 @@
 {
   "name": "vurif",
   "description": "Vue component dependency analyzer for Vue.js 2",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "license": "MIT",
   "private": false,
-  "repository": "https://github.com/simonNozaki/vurif.git",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/simonNozaki/vurif.git"
+  },
   "bin": {
     "vurif": "./bin/vurif.mjs"
   },
@@ -24,9 +27,10 @@
   },
   "types": "./dist/index.d.ts",
   "scripts": {
-    "build": "npx unbuild",
+    "build": "unbuild",
     "dev": "npx jiti playground/cli.ts",
-    "lint": "npx biome lint"
+    "lint": "biome lint",
+    "test": "vitest"
   },
   "dependencies": {
     "citty": "^0.1.6",
