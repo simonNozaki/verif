@@ -7,7 +7,7 @@ export type ComponentKey = keyof ComponentDictionary & string
 /**
  * The object maintaining data that has the format `lowercase component name: a file path`.
  */
-interface ComponentDictionary {
+export interface ComponentDictionary {
   [k: string]: VueFileName
 }
 
@@ -41,7 +41,7 @@ export class DefaultComponentsRegistry implements ComponentRegistry {
  * Return Vue file name and path walking along to a directory path of argument.
  * Read only `.vue` file or directories.
  */
-function readDirDeepSync(pathLike: string, results: ComponentDictionary = {}): ComponentDictionary {
+export function readDirDeepSync(pathLike: string, results: ComponentDictionary = {}): ComponentDictionary {
   if (isVueFile(pathLike)) {
     const paths = pathLike.split('/')
     const componentName = paths[paths.length - 1].replace('.vue', '')

@@ -2,7 +2,7 @@
 
 > Component dependency Analyzer for Vue.js 2.
 
-Analysis CLI tool for dependency graph.
+*"Vue verifier"* : Analysis CLI tool for dependency graph.
 
 - Analyze dependency from a page through directory
 - Visualize dependency by graph
