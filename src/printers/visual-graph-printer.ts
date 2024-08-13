@@ -68,7 +68,7 @@ export class VisualGraphPrinter implements Printer {
   /**
    * Create graph elements(nodes and edges).
    */
-  private createGraphElement(node: Node): ElementDefinition[] {
+  createGraphElement(node: Node): ElementDefinition[] {
     const name = VueFile
       .fromOriginal(this.registry.get(node.name))
       .vueFileName
