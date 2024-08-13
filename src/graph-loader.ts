@@ -49,12 +49,20 @@ export class GraphLoader {
   /**
    * Extract tag names walking along to all nodes recursively
    */
-  private traverseTag(astNodes: ASTNode[], tags: string[] = []) {
+  private traverseTag(astNodes: ASTNode[], tags: string[] = []): string[] {
     for (const an of astNodes) {
       if (an.type !== 1) continue
 
       if (an.children.length > 0) {
         this.traverseTag(an.children, tags)
+      }
+
+      if (an.ifConditions) {
+        // Exclude tags that are already included or ASTNode.tag self
+        const ifBlockTags = an.ifConditions
+          .filter((c) => !tags.includes(c.block.tag))
+          .map((c) => c.block.tag)
+        tags.push(...ifBlockTags)
       }
 
       tags.push(an.tag)
