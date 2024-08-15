@@ -14,7 +14,7 @@ export interface ComponentDictionary {
 /**
  * Global component store object. Only `ComponentRegistry` can access this object.
  */
-let components: ComponentDictionary = {}
+const components: ComponentDictionary = {}
 
 /**
  * Component names registry. This provides safe accesses to the global registry.
@@ -105,9 +105,7 @@ class StringSetOutputStrategy implements OutputStrategy<Set<string>> {
 /**
  * Read directory deeply and return Vue file name and path.
  */
-function readDirDeepBase<
-  T extends OutputStrategyType
->(pathLike: string, outputStrategy: OutputStrategy<T>): T {
+function readDirDeepBase<T extends OutputStrategyType>(pathLike: string, outputStrategy: OutputStrategy<T>): T {
   if (isVueFile(pathLike)) {
     outputStrategy.addEntry(pathLike)
     return outputStrategy.getEntries()

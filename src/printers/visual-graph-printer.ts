@@ -4,8 +4,7 @@ import type { Printer } from '../printer'
 import type { Node } from '../node'
 import type { ElementDefinition, NodeDefinition } from 'cytoscape'
 import { GraphServer } from './graph-server/server'
-import type { ComponentRegistry } from 'src/registry'
-import { VueFile } from '../vue-file'
+import type { ComponentRegistry } from '../registry'
 import { type VueFileName, toStaticPath } from '../util'
 
 /**
@@ -61,7 +60,7 @@ export class VisualGraphPrinter implements Printer {
   }
 
   printAll(nodes: Node[]): void {
-    const elements = nodes.map(node => this.createGraphElement(node)).flat()
+    const elements = nodes.flatMap((node) => this.createGraphElement(node))
 
     writeJavaScript(elements)
 

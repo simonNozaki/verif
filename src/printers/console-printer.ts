@@ -27,7 +27,6 @@ export class ConsolePrinter implements Printer {
    * Output the file name along to child nodes recursively
    */
   private println(node: Node, depth = 0) {
-    // ファイルパスからファイル名だけを取り出す
     const fileDirs = this.registry.get(node.name).split('/')
     const fileName = fileDirs[fileDirs.length - 1]
     const text = depth > 0 ? `${this.padNth(depth)}<== ${fileName}` : fileName

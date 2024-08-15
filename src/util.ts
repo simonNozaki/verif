@@ -3,7 +3,7 @@ import { fileURLToPath } from 'node:url'
 import path from 'node:path'
 const __filename = fileURLToPath(import.meta.url)
 // Compatible with ESModule and Node.js < 20
-export const __dirname = path.dirname(__filename)
+const __dirname = path.dirname(__filename)
 
 /**
  * Resolve a path to `static` directory.

@@ -2,11 +2,7 @@ import { defineCommand } from 'citty'
 import { createPrinter, printerTypeOrThrow } from '../printer'
 import { consola } from 'consola'
 import { colorize } from 'consola/utils'
-import {
-  DefaultComponentsRegistry,
-  readDirDeepSyncAsPaths,
-  setupComponentRegistry
-} from '../registry'
+import { readDirDeepSyncAsPaths, setupComponentRegistry } from '../registry'
 import { sharedArgs } from './_shared'
 import { GraphLoader } from '../graph-loader'
 import { Node } from '../node'

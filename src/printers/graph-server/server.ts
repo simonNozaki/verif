@@ -3,7 +3,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import consola from 'consola'
 import { colorize } from 'consola/utils'
-import { __dirname, toStaticPath } from '../../util'
+import { toStaticPath } from '../../util'
 
 type ContentType = 'text/html' | 'application/javascript' | 'text/css'
 
