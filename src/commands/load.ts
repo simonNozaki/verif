@@ -40,6 +40,7 @@ export default defineCommand({
     // Set the root node to the registry to look self up from it
     // Sometimes there are several `index.vue`, so identify root unique by absolute path
     const registry = setupComponentRegistry(componentsDir)
+    registry.set(vueFileName, vueFileName)
 
     const rootNode = new Node(vueFileName)
     new GraphLoader(registry).load(rootNode)
