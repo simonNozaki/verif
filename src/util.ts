@@ -12,13 +12,6 @@ export function toStaticPath(_path: string): string {
   return path.join(__dirname, 'static', _path)
 }
 
-/**
- * Convert to lowercase then cast `Lowercase`
- */
-export function toLowerCase(str: string): Lowercase<string> {
-  return str.toLowerCase() as Lowercase<string>
-}
-
 export type VueFileName = `${string}.vue`
 
 export function isVueFile(str: string): str is VueFileName {
