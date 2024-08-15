@@ -1,7 +1,7 @@
 {
   "name": "vurif",
   "description": "Vue component dependency analyzer for Vue.js 2",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "license": "MIT",
   "private": false,
   "repository": {
@@ -52,5 +52,6 @@
     "typescript": "^5.5.4",
     "vitest": "^2.0.5"
   },
-  "packageManager": "pnpm@9.6.0"
+  "packageManager": "pnpm@9.6.0",
+  "keywords": ["Vue", "Nuxt", "CLI"]
 }

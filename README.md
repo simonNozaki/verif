@@ -20,9 +20,11 @@
 - Vue/Nuxt projects often have view files in `views`, `pages` and components in `components`.
 - Vurif loads starting from view files and resolves dependencies in `components` recursively.
 
-> [!NOTE]  
+> [!NOTE]
 > Vurif assumes that component names in vue files match `components` file name.
 > In the future, maybe able to parse much dynamic.
+
+❗ **This project is under development.** Please pay attention to use this tool.
 
 ## Usage
 
