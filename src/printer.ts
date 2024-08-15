@@ -17,7 +17,7 @@ export function printerTypeOrThrow(type: string): PrinterType {
 
 export interface Printer {
   print(node: Node): void
-
+  printAll(nodes: Node[]): void
   onCompleted(handler: () => void): Printer
 }
 

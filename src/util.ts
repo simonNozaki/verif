@@ -3,20 +3,13 @@ import { fileURLToPath } from 'node:url'
 import path from 'node:path'
 const __filename = fileURLToPath(import.meta.url)
 // Compatible with ESModule and Node.js < 20
-export const __dirname = path.dirname(__filename)
+const __dirname = path.dirname(__filename)
 
 /**
  * Resolve a path to `static` directory.
  */
 export function toStaticPath(_path: string): string {
   return path.join(__dirname, 'static', _path)
-}
-
-/**
- * Convert to lowercase then cast `Lowercase`
- */
-export function toLowerCase(str: string): Lowercase<string> {
-  return str.toLowerCase() as Lowercase<string>
 }
 
 export type VueFileName = `${string}.vue`

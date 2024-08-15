@@ -10,6 +10,7 @@ import { consola } from 'consola'
 export class GraphLoader {
   constructor(private registry: ComponentRegistry) { }
 
+  // FIXME: Maybe non-side-effect functioning
   load(node: Node): void {
     const filePath = this.registry.get(node.name)
     if (!filePath) {

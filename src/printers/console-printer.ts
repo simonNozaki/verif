@@ -8,9 +8,14 @@ export class ConsolePrinter implements Printer {
 
   print(node: Node) {
     this.println(node)
-    if (this.completedHandler) {
-      this.completedHandler()
+    this.runIfHandlerPresent()
+  }
+
+  printAll(nodes: Node[]): void {
+    for (const node of nodes) {
+      this.println(node)
     }
+    this.runIfHandlerPresent()
   }
 
   onCompleted(handler: () => void): this {
@@ -22,7 +27,6 @@ export class ConsolePrinter implements Printer {
    * Output the file name along to child nodes recursively
    */
   private println(node: Node, depth = 0) {
-    // ファイルパスからファイル名だけを取り出す
     const fileDirs = this.registry.get(node.name).split('/')
     const fileName = fileDirs[fileDirs.length - 1]
     const text = depth > 0 ? `${this.padNth(depth)}<== ${fileName}` : fileName
@@ -42,5 +46,11 @@ export class ConsolePrinter implements Printer {
       paddings += '  '
     }
     return paddings
+  }
+
+  private runIfHandlerPresent() {
+    if (this.completedHandler) {
+      this.completedHandler()
+    }
   }
 }

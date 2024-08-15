@@ -1,3 +1,32 @@
+var getMeasureText = function (target) {
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext( '2d' );
+  const fontStyle = target.style('font-style');
+  const fontSize = target.style('font-size');
+  const fontFamily = target.style('font-family');
+  const fontWeight = target.style('font-weight');
+
+  ctx.font = fontStyle + ' ' + fontWeight + ' ' + fontSize + ' ' + fontFamily;
+
+  return ctx.measureText(target.data('id'));
+}
+
+var getCharacterWidthInCanvas = function (target) {
+  const labelWidthMargin = 16;
+
+  const measure = getMeasureText(target);
+
+  return measure.width + labelWidthMargin;
+}
+
+var getCharacterHeightInCanvas = function (target) {
+  const labelHeightMargin = 16;
+
+  const measure = getMeasureText(target);
+
+  return measure.actualBoundingBoxAscent + measure.actualBoundingBoxDescent + labelHeightMargin;
+}
+
 var cy = cytoscape({
   container: document.getElementById('cy'),
   elements: {{& elements}},
@@ -6,23 +35,33 @@ var cy = cytoscape({
       selector: 'node',
       style: {
         'background-color': '#11479e',
-        'content': 'data(id)',
+        color: '#ffffff',
+        content: 'data(id)',
+        shape: 'round-rectangle',
         'text-valign': 'center',
         'text-halign': 'center',
-        'width': 'mapData(score, 0, 0.006769776522008331, 20, 60)',
-        'height': 'mapData(score, 0, 0.006769776522008331, 20, 60)',
+        width: getCharacterWidthInCanvas,
       }
     },
     {
       selector: 'edge',
       style: {
-        'width': 4,
+        width: 4,
         'target-arrow-shape': 'triangle',
         'line-color': '#9dbaea',
         'target-arrow-color': '#9dbaea',
         'curve-style': 'bezier'
       }
-    }
+    },
+    {
+      selector: ':parent',
+      css: {
+        padding: getCharacterHeightInCanvas,
+        'text-valign': 'bottom',
+        'text-halign': 'center',
+        'text-margin-y': function (node) { -getCharacterHeightInCanvas(node) }
+      },
+    },
   ],
   layout: {
     name: 'breadthfirst',

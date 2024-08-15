@@ -15,7 +15,7 @@ describe('#createGraphElement', () => {
     it('should return an empty array', () => {
       const elements = printer.createGraphElement(root)
 
-      expect(elements).toStrictEqual([{ data: { id: 'index.vue' } }])
+      expect(elements).toStrictEqual([{ data: { id: 'pages/index.vue' } }])
     })
   })
 
@@ -34,9 +34,9 @@ describe('#createGraphElement', () => {
     it('should return an array with two elements', () => {
       const elements = printer.createGraphElement(root)
 
-      const indexVue = elements.find(e => e.data.id === 'index.vue')
-      const appVue = elements.find(e => e.data.id === 'App.vue')
-      const edge = elements.find(e => e.data.id === 'index.vue-App.vue')
+      const indexVue = elements.find(e => e.data.id === 'pages/index.vue')
+      const appVue = elements.find(e => e.data.id === 'components/App.vue')
+      const edge = elements.find(e => e.data.id === 'pages/index.vue-components/App.vue')
       expect(indexVue).toBeDefined()
       expect(appVue).toBeDefined()
       expect(edge).toBeDefined()
@@ -65,15 +65,15 @@ describe('#createGraphElement', () => {
     it('should return an array with nodes and edges', () => {
       const elements = printer.createGraphElement(root)
 
-      const indexVue = elements.find(e => e.data.id === 'index.vue')
-      const appVue = elements.find(e => e.data.id === 'App.vue')
-      const buttonVue = elements.find(e => e.data.id === 'Button.vue')
-      const inputTextVue = elements.find(e => e.data.id === 'InputText.vue')
-      const headerVue = elements.find(e => e.data.id === 'Header.vue')
-      const edge1 = elements.find(e => e.data.id === 'index.vue-App.vue')
-      const edge2 = elements.find(e => e.data.id === 'App.vue-Button.vue')
-      const edge3 = elements.find(e => e.data.id === 'App.vue-InputText.vue')
-      const edge4 = elements.find(e => e.data.id === 'index.vue-Header.vue')
+      const indexVue = elements.find(e => e.data.id === 'pages/index.vue')
+      const appVue = elements.find(e => e.data.id === 'components/App.vue')
+      const buttonVue = elements.find(e => e.data.id === 'components/atoms/Button.vue')
+      const inputTextVue = elements.find(e => e.data.id === 'components/atoms/InputText.vue')
+      const headerVue = elements.find(e => e.data.id === 'components/Header.vue')
+      const edge1 = elements.find(e => e.data.id === 'pages/index.vue-components/App.vue')
+      const edge2 = elements.find(e => e.data.id === 'components/App.vue-components/atoms/Button.vue')
+      const edge3 = elements.find(e => e.data.id === 'components/App.vue-components/atoms/InputText.vue')
+      const edge4 = elements.find(e => e.data.id === 'pages/index.vue-components/Header.vue')
       expect(indexVue).toBeDefined()
       expect(appVue).toBeDefined()
       expect(buttonVue).toBeDefined()
@@ -83,6 +83,70 @@ describe('#createGraphElement', () => {
       expect(edge2).toBeDefined()
       expect(edge3).toBeDefined()
       expect(edge4).toBeDefined()
+    })
+  })
+
+  describe('when the several nodes shares some edges', () => {
+    const registry = new MockComponentRegistry({
+      'App': 'components/App.vue',
+      'Button': 'components/atoms/Button.vue',
+      'InputText': 'components/atoms/InputText.vue',
+      'Header': 'components/Header.vue',
+      'Message': 'components/Message.vue',
+      'pages/index.vue': 'pages/index.vue',
+      'pages/about.vue': 'pages/about.vue'
+    })
+    const printer = new VisualGraphPrinter(registry)
+    const about = new Node('pages/about.vue')
+    beforeEach(() => {
+      root.addEdges({
+        App: new Node('App', {
+          Button: new Node('Button'),
+          InputText: new Node('InputText')
+        }),
+        Header: new Node('Header'),
+        Message: new Node('Message')
+      })
+      about.addEdges({
+        App: new Node('App', {
+          Button: new Node('Button'),
+          InputText: new Node('InputText')
+        }),
+        Message: new Node('Message')
+      })
+    })
+
+    it('should return an array with nodes and edges', () => {
+      const elements = printer.createGraphElement(root).concat(printer.createGraphElement(about))
+
+      const indexVue = elements.find(e => e.data.id === 'pages/index.vue')
+      const aboutVue = elements.find(e => e.data.id === 'pages/about.vue')
+      const appVue = elements.find(e => e.data.id === 'components/App.vue')
+      const buttonVue = elements.find(e => e.data.id === 'components/atoms/Button.vue')
+      const inputTextVue = elements.find(e => e.data.id === 'components/atoms/InputText.vue')
+      const headerVue = elements.find(e => e.data.id === 'components/Header.vue')
+      const messageVue = elements.find(e => e.data.id === 'components/Message.vue')
+      const edge1 = elements.find(e => e.data.id === 'pages/index.vue-components/App.vue')
+      const edge2 = elements.find(e => e.data.id === 'components/App.vue-components/atoms/Button.vue')
+      const edge3 = elements.find(e => e.data.id === 'components/App.vue-components/atoms/InputText.vue')
+      const edge4 = elements.find(e => e.data.id === 'pages/index.vue-components/Header.vue')
+      const edge5 = elements.find(e => e.data.id === 'pages/index.vue-components/Message.vue')
+      const edge6 = elements.find(e => e.data.id === 'pages/about.vue-components/App.vue')
+      const edge7 = elements.find(e => e.data.id === 'pages/about.vue-components/Message.vue')
+      expect(indexVue).toBeDefined()
+      expect(aboutVue).toBeDefined()
+      expect(appVue).toBeDefined()
+      expect(buttonVue).toBeDefined()
+      expect(inputTextVue).toBeDefined()
+      expect(headerVue).toBeDefined()
+      expect(messageVue).toBeDefined()
+      expect(edge1).toBeDefined()
+      expect(edge2).toBeDefined()
+      expect(edge3).toBeDefined()
+      expect(edge4).toBeDefined()
+      expect(edge5).toBeDefined()
+      expect(edge6).toBeDefined()
+      expect(edge7).toBeDefined()
     })
   })
 })

@@ -2,6 +2,7 @@
 import Button from './atoms/Button.vue'
 import LinkButton from './atoms/LinkButton.vue'
 import CardList from './CardList.vue'
+import Message from './atoms/Message.vue'
 
 export default {}
 </script>
@@ -9,6 +10,7 @@ export default {}
 <template>
   <div>
     <h1>Vue app</h1>
+    <Message message="This is a Vue app" />
     <Button>
       increment
     </Button>
