@@ -60,6 +60,15 @@ export class VisualGraphPrinter implements Printer {
     new GraphServer().start()
   }
 
+  printAll(nodes: Node[]): void {
+    const elements = nodes.map(node => this.createGraphElement(node)).flat()
+
+    writeJavaScript(elements)
+
+    this.completedHandler()
+    new GraphServer().start()
+  }
+
   onCompleted(handler: () => void): this {
     this.completedHandler = handler
     return this
@@ -69,9 +78,7 @@ export class VisualGraphPrinter implements Printer {
    * Create graph elements(nodes and edges).
    */
   createGraphElement(node: Node): ElementDefinition[] {
-    const name = VueFile
-      .fromOriginal(this.registry.get(node.name))
-      .vueFileName
+    const name = this.registry.get(node.name)
     const nodeDef = createNodeDef(name)
 
     if (!node.hasEdges()) return [nodeDef]
@@ -79,12 +86,8 @@ export class VisualGraphPrinter implements Printer {
     const childNodeDefs = Object.entries(node.edges).map((edge: [name: string, n: Node]) => {
       const childNode = edge[1]
       // create a edge leading to child node
-      const parentName = VueFile
-        .fromOriginal(this.registry.get(node.name))
-        .vueFileName
-      const childName = VueFile
-        .fromOriginal(this.registry.get(childNode.name))
-        .vueFileName
+      const parentName = this.registry.get(node.name)
+      const childName = this.registry.get(childNode.name)
       const edgeDef = createEdgeDef(parentName, childName)
       const childNodeDefs = this.createGraphElement(childNode)
 

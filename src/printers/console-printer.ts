@@ -8,9 +8,14 @@ export class ConsolePrinter implements Printer {
 
   print(node: Node) {
     this.println(node)
-    if (this.completedHandler) {
-      this.completedHandler()
+    this.runIfHandlerPresent()
+  }
+
+  printAll(nodes: Node[]): void {
+    for (const node of nodes) {
+      this.println(node)
     }
+    this.runIfHandlerPresent()
   }
 
   onCompleted(handler: () => void): this {
@@ -42,5 +47,11 @@ export class ConsolePrinter implements Printer {
       paddings += '  '
     }
     return paddings
+  }
+
+  private runIfHandlerPresent() {
+    if (this.completedHandler) {
+      this.completedHandler()
+    }
   }
 }

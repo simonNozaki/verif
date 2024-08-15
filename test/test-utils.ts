@@ -10,7 +10,12 @@ export class MockComponentRegistry implements ComponentRegistry {
   get(key: ComponentKey): VueFileName {
     return this.components[key]
   }
-  set(key: Lowercase<string>, value: VueFileName): void {
+
+  set(key: string, value: VueFileName): void {
     this.components[key] = value
+  }
+
+  setAll(entries: ComponentDictionary): void {
+    Object.assign(this.components, entries)
   }
 }
