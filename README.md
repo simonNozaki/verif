@@ -1,32 +1,60 @@
 # Vurif
 
+[![npm version](https://img.shields.io/npm/v/vurif?color=yellow)](https://npmjs.com/package/vurif)
+[![npm downloads](https://img.shields.io/npm/dm/vurif?color=yellow)](https://npmjs.com/package/vurif)
+
 > Component dependency Analyzer for Vue.js 2.
 
-*"Vue verifier"* : Analysis CLI tool for dependency graph.
+*"Vue verifier"* : CLI tool to visualize dependencies by graph.
 
-- Analyze dependency from a page through directory
+💡 **Epic Features:**
+
+- Analyze dependency from a page(pages) through directory
 - Visualize dependency by graph
-- Works only Vue.js 2.
+
+> [!CAUTION]
+> Works only Vue.js 2 (Not guarantee to work on Vue 3)
+
+📒 **Key Concepts:**
+
+- Vue/Nuxt projects often have view files in `views`, `pages` and components in `components`.
+- Vurif loads starting from view files and resolves dependencies in `components` recursively.
+
+> [!NOTE]  
+> Vurif assumes that component names in vue files match `components` file name.
+> In the future, maybe able to parse much dynamic.
 
 ## Usage
 
 ### Install
 
 ```bash
-# Global install as CLI tooling
+# npm
 npm i -g vurif
+
+# yarn
+yarn add -g vurif
 ```
 
-### Analysis
+### Analysis and Visualization
+
+Analyze dependencies of one view file:
 
 ```bash
 vurif load <vue-file> <components-dir>
-# vurif load example/App.vue example
+# vurif load example/pages/index.vue example/components
+```
+
+Analyze dependencies of source root file:
+
+```bash
+vurif load <source-dir> <components-dir>
+# vurif load-all example/pages/ example/components
 ```
 
 Subcommands has only `load` currently. See also `vurif --help`
 
-Vurif output dependency analysis by standard out or visual graph.
+Vurif output dependency analysis by standard output or visual graph.
 
 ![graph](./docs/graph-image.png)
 
