@@ -2,7 +2,7 @@ import { defineCommand } from 'citty'
 import { Node } from '../node'
 import { setupComponentRegistry } from '../registry'
 import { vueFileNameOrThrow } from '../util'
-import { createPrinter, printerTypeOrThrow } from '../printer'
+import { createPrinter, getPrinterType } from '../printer'
 import { GraphLoader } from '../graph-loader'
 import { consola } from 'consola'
 import { colorize } from 'consola/utils'
@@ -29,8 +29,7 @@ export default defineCommand({
   run({ args }) {
     const fileName = args.pageFileName
     const componentsDir = args.componentsDir
-    const format = args.format === 'stdout' ? 'stdout' : 'graph'
-    const printerType = printerTypeOrThrow(format)
+    const printerType = getPrinterType(args.format as string)
     const vueFileName = vueFileNameOrThrow(fileName)
 
     consola.info(

@@ -1,6 +1,7 @@
 import { readdirSync, lstatSync } from 'node:fs'
 import { isVueFile, type VueFileName } from './util'
 import { consola } from 'consola'
+import path from 'node:path'
 
 export type ComponentKey = keyof ComponentDictionary & string
 
@@ -117,8 +118,8 @@ function readDirDeepBase<T extends OutputStrategyType>(pathLike: string, outputS
   }
 
   const pathNames = readdirSync(pathLike)
-  for (const path of pathNames) {
-    const entries = readDirDeepBase(`${pathLike}/${path}`, outputStrategy)
+  for (const pn of pathNames) {
+    const entries = readDirDeepBase(path.join(pathLike, pn), outputStrategy)
     outputStrategy.addEntires(entries)
   }
 

@@ -1,5 +1,5 @@
 import { defineCommand } from 'citty'
-import { createPrinter, printerTypeOrThrow } from '../printer'
+import { createPrinter, getPrinterType } from '../printer'
 import { consola } from 'consola'
 import { colorize } from 'consola/utils'
 import { readDirDeepSyncAsPaths, setupComponentRegistry } from '../registry'
@@ -31,13 +31,13 @@ export default defineCommand({
     const componentsDir = args.componentsDir
     const format = args.format === 'stdout' ? 'stdout' : 'graph'
     // Early check as validation
-    const printerType = printerTypeOrThrow(format)
+    const printerType = getPrinterType(format)
 
     consola.info(
       `Traversing "${colorize('blue', viewsDir)}" associated with "${colorize('blue', componentsDir)}"`
     )
 
-    const registry = setupComponentRegistry(componentsDir)    
+    const registry = setupComponentRegistry(componentsDir)
     const loader = new GraphLoader(registry)
 
     const rootPaths = readDirDeepSyncAsPaths(viewsDir)
