@@ -56,24 +56,24 @@ export class SummaryReportPrinter implements Printer {
 
 interface ComponentStatistics {
   name: VueFileName
-  frequency: number
+  indegree: number
 }
 
 /**
  * Create statistics of each components on the graph.
  * Return frequencies of components name by counting target
  */
-function createComponentStatistics(elements: GraphElement[]): ComponentStatistics[] {
+export function createComponentStatistics(elements: GraphElement[]): ComponentStatistics[] {
   const edges = elements.filter((elm): elm is EdgeDef => isEdgeDef(elm))
   // Group edges by target
   const edgesToComponent = groupBy(edges, ({ target }) => target)
 
   return Object.keys(edgesToComponent)
     .map((key: VueFileName) => {
-      const frequency = edgesToComponent[key].length
+      const indegree = edgesToComponent[key].length
       return {
         name: key,
-        frequency
+        indegree
       }
     })
 }
@@ -97,7 +97,7 @@ class StatisticsReportFormatter {
 
     const HEADER_NUMBER = ' # '
     const HEADER_NAME = ' name '
-    const HEADER_FREQUENCY = ' frequency '
+    const HEADER_FREQUENCY = ' indegree '
     const padRecord = (text: string, max: number, align: TextAlign): string => {
       const offset = max - text.length
       return textAlign(text, offset, align)
@@ -120,12 +120,12 @@ class StatisticsReportFormatter {
     records.push(tableBorder)
 
     // data records
-    const frequentStatistics = this.statistics.sort((l, r) => r.frequency - l.frequency)
+    const frequentStatistics = this.statistics.sort((l, r) => r.indegree - l.indegree)
     for (let i = 0; i < frequentStatistics.length; i++) {
       const statistic = frequentStatistics[i]
       const recordNumber = padRecord((i + 1).toString(), '999'.length, 'left')
       const nameWithPadding = padRecord(statistic.name, nameMaxLength, 'left')
-      const frequencyWithPadding = padRecord(statistic.frequency.toString(), HEADER_FREQUENCY.length, 'right')
+      const frequencyWithPadding = padRecord(statistic.indegree.toString(), HEADER_FREQUENCY.length, 'right')
       const record = ['', recordNumber, nameWithPadding, frequencyWithPadding, ''].join('|')
 
       records.push(record)
