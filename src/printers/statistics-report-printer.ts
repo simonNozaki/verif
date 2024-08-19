@@ -43,7 +43,7 @@ export class StatisticsReportPrinter implements Printer {
     const separationLine = '-'.repeat(formatter.width)
     // Add blank to line breaking
     const content = [
-      'Node frequencies:',
+      'Node degrees:',
       tableData,
       separationLine,
       'Summary: ',
