@@ -24,12 +24,16 @@ export interface Printer {
  * Factory method of `Printer` s.
  */
 export function createPrinter(registry: ComponentRegistry, type: PrinterType | undefined = 'stdout'): Printer {
+  let printerConstructor: new (registry: ComponentRegistry) => Printer
   switch (type) {
     case 'graph':
-      return new VisualGraphPrinter(registry)
+      printerConstructor = VisualGraphPrinter
+      break
     case 'report':
-      return new SummaryReportPrinter(registry)
+      printerConstructor = SummaryReportPrinter
+      break
     default:
-      return new ConsolePrinter(registry)
+      printerConstructor = ConsolePrinter
   }
+  return new printerConstructor(registry)
 }
