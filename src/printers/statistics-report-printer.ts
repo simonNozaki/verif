@@ -2,7 +2,7 @@ import type { ComponentRegistry } from '../registry'
 import type { Node } from '../node';
 import type { Printer } from '../printer'
 import { GraphGenerator, ObjectGraphStrategy, type GraphElement, type EdgeDef, isEdgeDef } from './graph-generator'
-import { type TextAlign, type VueFileName, groupBy, textAlign, writeStdout } from '../util'
+import { type TextAlign, type VueFileName, groupBy, textAlign, vueFileNameOrThrow, writeStdout } from '../util'
 
 export class SummaryReportPrinter implements Printer {
   private generator: GraphGenerator<'object'>
@@ -57,6 +57,7 @@ export class SummaryReportPrinter implements Printer {
 interface ComponentStatistics {
   name: VueFileName
   indegree: number
+  outdegree: number
 }
 
 /**
@@ -66,16 +67,25 @@ interface ComponentStatistics {
 export function createComponentStatistics(elements: GraphElement[]): ComponentStatistics[] {
   const edges = elements.filter((elm): elm is EdgeDef => isEdgeDef(elm))
   // Group edges by target
-  const edgesToComponent = groupBy(edges, ({ target }) => target)
+  const edgesByIndegree = groupBy(edges, ({ target }) => target)
+  const edgesByOutdegree = groupBy(edges, ({ source }) => source)
 
-  return Object.keys(edgesToComponent)
-    .map((key: VueFileName) => {
-      const indegree = edgesToComponent[key].length
-      return {
-        name: key,
-        indegree
-      }
+  // Create keys set combined with indegree and outdegree
+  const vueFileNameKeys = Object.keys(edgesByIndegree).concat(Object.keys(edgesByOutdegree)).map((k) => vueFileNameOrThrow(k))
+  const vueFileNameSet = new Set(vueFileNameKeys)
+
+  const results = []
+  for (const vueFileName of vueFileNameSet.keys()) {
+    const indegree = edgesByIndegree[vueFileName]?.length ?? 0
+    const outdegree = edgesByOutdegree[vueFileName]?.length ?? 0
+    results.push({
+      name: vueFileName,
+      indegree,
+      outdegree
     })
+  }
+
+  return results
 }
 
 /**
