@@ -1,6 +1,6 @@
 import type { Node } from './node'
 import type { ComponentRegistry } from './registry'
-import { ConsolePrinter, VisualGraphPrinter, SummaryReportPrinter } from './printers'
+import { ConsolePrinter, VisualGraphPrinter, StatisticsReportPrinter } from './printers'
 
 type PrinterType = 'stdout' | 'graph' | 'report'
 
@@ -30,7 +30,7 @@ export function createPrinter(registry: ComponentRegistry, type: PrinterType | u
       printerConstructor = VisualGraphPrinter
       break
     case 'report':
-      printerConstructor = SummaryReportPrinter
+      printerConstructor = StatisticsReportPrinter
       break
     default:
       printerConstructor = ConsolePrinter

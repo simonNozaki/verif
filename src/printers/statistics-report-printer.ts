@@ -4,7 +4,10 @@ import type { Printer } from '../printer'
 import { GraphGenerator, ObjectGraphStrategy, type GraphElement, type EdgeDef, isEdgeDef } from './graph-generator'
 import { type TextAlign, type VueFileName, groupBy, textAlign, vueFileNameOrThrow, writeStdout } from '../util'
 
-export class SummaryReportPrinter implements Printer {
+/**
+ * Printer for reporting graph elements statistics.
+ */
+export class StatisticsReportPrinter implements Printer {
   private generator: GraphGenerator<'object'>
   private completedHandler: () => void
 
@@ -102,6 +105,14 @@ class StatisticsReportFormatter {
   constructor (private statistics: ComponentStatistics[]) {}
 
   format(): string {
+    // For testability, separate record generation and text joining
+    const records = this.createTableRows()
+
+    // Add margin left to the table string
+    return records.map((record) => `${MARGIN_LEFT}${record}`).join('\n')
+  }
+
+  createTableRows(): string[] {
     const nameLengths = this.statistics.map(({ name }) => name.length)
     const nameMaxLength = Math.max(...nameLengths) + 2
 
@@ -145,8 +156,7 @@ class StatisticsReportFormatter {
     // Insert margin bottom of table
     records.push('')
 
-    // Add margin left to the table string
-    return records.map((record) => `${MARGIN_LEFT}${record}`).join('\n')
+    return records
   }
 
   get width(): number {
