@@ -29,9 +29,7 @@ export default defineCommand({
   run({ args }) {
     const viewsDir = args.viewsDir
     const componentsDir = args.componentsDir
-    const format = args.format === 'stdout' ? 'stdout' : 'graph'
-    // Early check as validation
-    const printerType = getPrinterType(format)
+    const printerType = getPrinterType(args.format as string)
 
     consola.info(
       `Traversing "${colorize('blue', viewsDir)}" associated with "${colorize('blue', componentsDir)}"`

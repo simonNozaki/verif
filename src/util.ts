@@ -52,10 +52,21 @@ export function groupBy<T, R extends string | number | symbol>(array: T[], trans
 /**
  * Write buffer to stdout
  */
-export function writeStd(buffer: string): void {
+export function writeStdout(buffer: string): void {
   writeStream(process.stdout, buffer)
 }
 
 function writeStream(stream: NodeJS.WritableStream, buffer: string): void {
   stream.write(`${buffer}\n`)
+}
+
+export type TextAlign = 'left' | 'right'
+
+/**
+ * Add padding to text
+ */
+export function textAlign(text: string, offset: number, align: TextAlign): string {
+  const padding = ' '.repeat(offset)
+
+  return align === 'left' ? `${text}${padding}` : `${padding}${text}`
 }

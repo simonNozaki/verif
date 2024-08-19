@@ -2,7 +2,7 @@ import type { ComponentRegistry } from '../registry'
 import type { Node } from '../node';
 import type { Printer } from '../printer'
 import { GraphGenerator, ObjectGraphStrategy, type GraphElement, type EdgeDef, isEdgeDef } from './graph-generator'
-import { type VueFileName, groupBy, writeStd } from '../util'
+import { type TextAlign, type VueFileName, groupBy, textAlign, writeStdout } from '../util'
 
 export class SummaryReportPrinter implements Printer {
   private generator: GraphGenerator<'object'>
@@ -14,24 +14,43 @@ export class SummaryReportPrinter implements Printer {
 
   print(node: Node): void {
     const elements = this.generator.createElements(node)
+    this.writeReport(elements)
+  }
+
+  printAll(nodes: Node[]): void {
+    const elements = nodes.flatMap((node) => this.generator.createElements(node))
+    this.writeReport(elements)
+  }
+
+  onCompleted(handler: () => void): Printer {
+    this.completedHandler = handler
+    return this
+  }
+
+  /**
+   * Create table data and summary by text, then print to stdout
+   */
+  private writeReport(elements: GraphElement[]): void {
     const statistics = createComponentStatistics(elements)
 
     const formatter = new StatisticsReportFormatter(statistics)
     const tableData = formatter.format()
     const summary = formatSummary(elements)
 
-    writeReport(tableData, summary, formatter.width)
+    const separationLine = '-'.repeat(formatter.width)
+    // Add blank to line breaking
+    const content = [
+      'Node frequencies:',
+      tableData,
+      separationLine,
+      'Summary: ',
+      '',
+      summary,
+      ''
+    ].join('\n')
+    writeStdout(content)
 
     this.completedHandler()
-  }
-
-  printAll(nodes: Node[]): void {
-    throw new Error('Method not implemented.')
-  }
-
-  onCompleted(handler: () => void): Printer {
-    this.completedHandler = handler
-    return this
   }
 }
 
@@ -79,19 +98,23 @@ class StatisticsReportFormatter {
     const HEADER_NUMBER = ' # '
     const HEADER_NAME = ' name '
     const HEADER_FREQUENCY = ' frequency '
+    const padRecord = (text: string, max: number, align: TextAlign): string => {
+      const offset = max - text.length
+      return textAlign(text, offset, align)
+    }
 
     // header record
+    // TODO: May can refactor by extracting a function
     const headerNumber = padRecord(HEADER_NUMBER, '999'.length, 'left')
     const headerName = padRecord(HEADER_NAME, nameMaxLength, 'left')
     const headerFrequency = padRecord(HEADER_FREQUENCY, HEADER_FREQUENCY.length, 'right')
     const header = ['', headerNumber, headerName, headerFrequency, ''].join('|')
-    // Insert margin top of table(adjusted to header line size)
-    const marginY = ' '.repeat(header.length)
     const tableBorder = '-'.repeat(header.length)
     this._width = `${MARGIN_LEFT}${tableBorder}`.length
 
     const records: string[] = []
-    records.push(marginY)
+    // Insert margin top of table(adjusted to header line size)
+    records.push('')
     records.push(tableBorder)
     records.push(header)
     records.push(tableBorder)
@@ -110,7 +133,7 @@ class StatisticsReportFormatter {
 
     records.push(tableBorder)
     // Insert margin bottom of table
-    records.push(marginY)
+    records.push('')
 
     // Add margin left to the table string
     return records.map((record) => `${MARGIN_LEFT}${record}`).join('\n')
@@ -119,19 +142,6 @@ class StatisticsReportFormatter {
   get width(): number {
     return this._width
   }
-}
-
-type TextAlign = 'left' | 'right'
-
-/**
- * Space-padding of texts for table record
- * TODO: can abstract padding logic
- */
-function padRecord (text: string, max: number, align: TextAlign): string {
-  const offset = max - text.length
-  const padding = ' '.repeat(offset)
-
-  return align === 'left' ? `${text}${padding}` : `${padding}${text}`
 }
 
 /**
@@ -143,20 +153,4 @@ function formatSummary(elements: GraphElement[]): string {
   const edgeSummary = `➣  Total edges: ${elementByType.edge?.length}`
 
   return [nodeSummary, edgeSummary].map((text) => `${MARGIN_LEFT}${text}`).join('\n')
-}
-
-function writeReport(tableData: string, summary: string, lineSize: number): void {
-  const separationLine = '-'.repeat(lineSize)
-  // Add blank to line breaking
-  const content = [
-    'Node frequencies:',
-    tableData,
-    separationLine,
-    'Summary: ',
-    '',
-    summary,
-    ''
-  ].join('\n')
-
-  writeStd(content)
 }
