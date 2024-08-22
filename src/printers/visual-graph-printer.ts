@@ -34,7 +34,7 @@ export class VisualGraphPrinter implements Printer {
   }
 
   print(node: Node): void {
-    const elements = this.graphGenerator.createElements(node)
+    const elements = this.graphGenerator.generate(node)
 
     writeJavaScript(elements)
 
@@ -43,7 +43,7 @@ export class VisualGraphPrinter implements Printer {
   }
 
   printAll(nodes: Node[]): void {
-    const elements = nodes.flatMap((node) => this.graphGenerator.createElements(node))
+    const elements = this.graphGenerator.generateAll(nodes)
 
     writeJavaScript(elements)
 

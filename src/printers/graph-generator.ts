@@ -39,6 +39,11 @@ interface GraphStrategy<T> {
    * Create data representing a edge connecting nodes
    */
   createEdgeDef(source: VueFileName, target: VueFileName): T
+
+  /**
+   * Get id from a graph element
+   */
+  getId(element: T): string
 }
 
 export class CytoscapeGraphStrategy implements GraphStrategy<ElementDefinition> {
@@ -57,6 +62,10 @@ export class CytoscapeGraphStrategy implements GraphStrategy<ElementDefinition> 
       }
     }
   }
+
+  getId(element: ElementDefinition): string {
+    return element.data.id ?? ''
+  }
 }
 
 export class ObjectGraphStrategy implements GraphStrategy<GraphElement> {
@@ -74,6 +83,32 @@ export class ObjectGraphStrategy implements GraphStrategy<GraphElement> {
       target
     }
   }
+
+  getId(element: GraphElement): string {
+    return element.id
+  }
+}
+
+/**
+ * Dependency resolution cache.
+ * NOTE: Element equality in a cache is specified by `id`
+ */
+class ResolutionCache<E extends ElementType> {
+  private readonly resolvedIds: Set<string> = new Set()
+
+  constructor(private strategy: GraphStrategy<ElementTypeOf<E>>) {}
+
+  markAsResolved (...elms: ElementTypeOf<E>[]): void {
+    for (const elm of elms) {
+      const id = this.strategy.getId(elm)
+      this.resolvedIds.add(id)
+    }
+  }
+
+  alreadyResolved(elm: ElementTypeOf<E>): boolean {
+    const id = this.strategy.getId(elm)
+    return this.resolvedIds.has(id)
+  }
 }
 
 /**
@@ -88,9 +123,47 @@ export class GraphGenerator<E extends ElementType> {
   }
 
   /**
+   * Traverse all nodes and skip it when once resolved
+   */
+  generateAll(nodes: Node[], cache: ResolutionCache<E> = new ResolutionCache(this.graphStrategy)): ElementTypeOf<E>[] {
+    const createChildAndEdge = (parent: Node, child: Node): ElementTypeOf<E>[] => {
+      const parentName = this.registry.get(parent.name)
+      const childName = this.registry.get(child.name)
+      // An edge from parent to child is always new
+      // Skip resolving when child node has been resolved once or more, and children are maybe blank.
+      const childNodeDefs = this.generateAll([child], cache)
+      const edgeDef = this.graphStrategy.createEdgeDef(parentName, childName)
+
+      return [edgeDef, ...childNodeDefs]
+    }
+
+    const elements = []
+    for (const node of nodes) {
+      const name = this.registry.get(node.name)
+      const nodeDef = this.graphStrategy.createNodeDef(name)
+      if (cache.alreadyResolved(nodeDef)) continue
+      if (!node.hasEdges()) {
+        cache.markAsResolved(nodeDef)
+        elements.push(nodeDef)
+        continue
+      }
+
+      // Create child node and edge from parent to child
+      const childNodeDefs = Object.entries(node.edges).flatMap(
+        (edge: [_: string, n: Node]) => (createChildAndEdge(node, edge[1]))
+      )
+
+      elements.push(nodeDef, ...childNodeDefs)
+      cache.markAsResolved(nodeDef, ...childNodeDefs)
+    }
+
+    return elements
+  }
+
+  /**
    * Create graph elements(nodes and edges).
    */
-  createElements(node: Node): ElementTypeOf<E>[] {
+  generate(node: Node): ElementTypeOf<E>[] {
     const name = this.registry.get(node.name)
     const nodeDef = this.graphStrategy.createNodeDef(name)
 
@@ -102,7 +175,7 @@ export class GraphGenerator<E extends ElementType> {
       const parentName = this.registry.get(node.name)
       const childName = this.registry.get(childNode.name)
       const edgeDef = this.graphStrategy.createEdgeDef(parentName, childName)
-      const childNodeDefs = this.createElements(childNode)
+      const childNodeDefs = this.generate(childNode)
 
       return [edgeDef, ...childNodeDefs]
     })

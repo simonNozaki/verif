@@ -16,12 +16,12 @@ export class StatisticsReportPrinter implements Printer {
   }
 
   print(node: Node): void {
-    const elements = this.generator.createElements(node)
+    const elements = this.generator.generate(node)
     this.writeReport(elements)
   }
 
   printAll(nodes: Node[]): void {
-    const elements = nodes.flatMap((node) => this.generator.createElements(node))
+    const elements = this.generator.generateAll(nodes)
     this.writeReport(elements)
   }
 
