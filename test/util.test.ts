@@ -2,6 +2,29 @@ import { describe, it, expect } from 'vitest'
 import { groupBy } from '../src/util'
 
 describe('#groupBy', () => {
+  describe('when an array has no elements', () => {
+    const kingdoms: string[] = []
+
+    it('should return an empty object', () => {
+      const kingdomGroup = groupBy(kingdoms, (kingdom) => kingdom)
+
+      expect(kingdomGroup).toStrictEqual({})
+    })
+  })
+
+  describe('when item is a simple text', () => {
+    const cities = ['Tokyo', 'Seoul', 'Hongkong', 'Taipei', 'Tokyo', 'Seoul']
+
+    it('should group to same texts', () => {
+      const cityGroup = groupBy(cities, (city) => city)
+
+      expect(cityGroup.Tokyo).toBeDefined()
+      expect(cityGroup.Tokyo).toHaveLength(2)
+      expect(cityGroup.Hongkong).toBeDefined()
+      expect(cityGroup.Hongkong).toHaveLength(1)
+    })
+  })
+
   describe('when items have grouping keys', () => {
     const inventory = [
       { name: 'asparagus', type: 'vegetables', quantity: 5 },
