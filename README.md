@@ -54,9 +54,7 @@ vurif load-all <source-dir> <components-dir>
 # vurif load-all example/pages/ example/components
 ```
 
-Subcommands has only `load` currently. See also `vurif --help`
-
-Vurif output dependency analysis by standard output or visual graph.
+See also `vurif --help`
 
 ## Options
 
@@ -64,13 +62,13 @@ Vurif output dependency analysis by standard output or visual graph.
 
 *`graph`* (default)
 
-Visualize dependency graph, served on local server.
+Visualize dependencies graph, served on a local server.
 
 ![graph](./docs/graph-image.png)
 
 *`stdout`*
 
-Print graph to stdout.
+Print graph to stdout by tree format.
 
 ```
 index.vue
@@ -85,31 +83,31 @@ index.vue
       <== Card.vue
 ```
 
-`*report*`
+*`report`*
 
 Report degrees of graph elements and summary.
 
 ```
 Node degrees:
 
-  ----------------------------------------------------------
-  | # | name                                    | indegree |
-  ----------------------------------------------------------
-  |1  |example/components/atoms/Message.vue     |         2|
-  |2  |example/components/About.vue             |         1|
-  |3  |example/components/App.vue               |         1|
-  |4  |example/components/atoms/Button.vue      |         1|
-  |5  |example/components/atoms/LinkButton.vue  |         1|
-  |6  |example/components/CardList.vue          |         1|
-  |7  |example/components/Card.vue              |         1|
-  |8  |example/pages/home/index.vue             |         0|
-  |9  |example/pages/index.vue                  |         0|
-  ----------------------------------------------------------
+  ----------------------------------------------------------------------
+  | # | name                                    | indegree | outdegree |
+  ----------------------------------------------------------------------
+  |1  |example/components/atoms/Message.vue     |         2|          0|
+  |2  |example/components/About.vue             |         1|          1|
+  |3  |example/components/App.vue               |         1|          4|
+  |4  |example/components/atoms/Button.vue      |         1|          0|
+  |5  |example/components/atoms/LinkButton.vue  |         1|          0|
+  |6  |example/components/CardList.vue          |         1|          1|
+  |7  |example/components/Card.vue              |         1|          0|
+  |8  |example/pages/home/index.vue             |         0|          1|
+  |9  |example/pages/index.vue                  |         0|          1|
+  ----------------------------------------------------------------------
 
-------------------------------------------------------------
+------------------------------------------------------------------------
 Summary:
 
-  🔸 Total nodes: 10
+  🔸 Total nodes: 9
   ➣  Total edges: 8
 
 ```
