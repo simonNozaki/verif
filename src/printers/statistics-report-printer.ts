@@ -57,7 +57,7 @@ export class StatisticsReportPrinter implements Printer {
   }
 }
 
-interface ComponentStatistics {
+export interface ComponentStatistics {
   name: VueFileName
   indegree: number
   outdegree: number
@@ -70,6 +70,7 @@ interface ComponentStatistics {
 export function createComponentStatistics(elements: GraphElement[]): ComponentStatistics[] {
   const edges = elements.filter((elm): elm is EdgeDef => isEdgeDef(elm))
   // Group edges by target
+  // FIXME: Improve `select count group by`
   const edgesByIndegree = groupBy(edges, ({ target }) => target)
   const edgesByOutdegree = groupBy(edges, ({ source }) => source)
 
@@ -91,72 +92,129 @@ export function createComponentStatistics(elements: GraphElement[]): ComponentSt
   return results
 }
 
+interface StatisticsCell {
+  value: string
+  length: number
+}
+
+/**
+ * Type definition for a table with column definitions
+ */
+interface StatisticsRecordColumns {
+  rowNum: StatisticsCell
+  name: StatisticsCell
+  indegree: StatisticsCell
+  outdegree: StatisticsCell
+}
+
 /**
  * Margin size for the table and summary
  */
 const MARGIN_LEFT = '  '
 
-class StatisticsReportFormatter {
+export class StatisticsReportFormatter {
   /**
    * Report width through reports
    */
   private _width = 0
 
+  private _maxNameLength = 0
+  private _tableBorder = ''
+
+  // table header columns
+
+  private readonly HEADER_ROWNUM = ' # '
+  private readonly HEADER_NAME = ' name '
+  private readonly HEADER_INDEGREE = ' indegree '
+  private readonly HEADER_OUTDEGREE = ' outdegree '
+
   constructor (private statistics: ComponentStatistics[]) {}
 
   format(): string {
-    // For testability, separate record generation and text joining
-    const records = this.createTableRows()
+    this.calculateMaxNameLength()
+
+    const records: string[] = []
+    const headerRecord = this.createHeaderRow()
+    records.push(...headerRecord)
+
+    const dataRecords = this.createDataRows()
+    records.push(...dataRecords)
+    // Insert margin bottom of table
+    records.push(this._tableBorder, '')
 
     // Add margin left to the table string
     return records.map((record) => `${MARGIN_LEFT}${record}`).join('\n')
   }
 
-  createTableRows(): string[] {
-    const nameLengths = this.statistics.map(({ name }) => name.length)
-    const nameMaxLength = Math.max(...nameLengths) + 2
+  calculateMaxNameLength(): void {
+    const nameMaxLength = Math.max(...this.statistics.map(({ name }) => name.length)) + 2
+    this._maxNameLength = nameMaxLength
+  }
 
-    const HEADER_NUMBER = ' # '
-    const HEADER_NAME = ' name '
-    const HEADER_FREQUENCY = ' indegree '
+  /**
+   * Create header lins of report table
+   * @example
+   * ```
+   *  ----------------------------------------------------------------------
+   *  | # | name                                    | indegree | outdegree |
+   *  ----------------------------------------------------------------------
+   * ```
+   */
+  createHeaderRow(): string[] {
+    const nameMaxLength = Math.max(...this.statistics.map(({ name }) => name.length)) + 2
+    const columns: StatisticsRecordColumns = {
+      rowNum: { value: this.HEADER_ROWNUM, length: 3 },
+      name: { value: this.HEADER_NAME, length: nameMaxLength },
+      indegree: { value: this.HEADER_INDEGREE, length: this.HEADER_INDEGREE.length },
+      outdegree: { value: this.HEADER_OUTDEGREE, length: this.HEADER_OUTDEGREE.length },
+    }
+    const header = this.createTableRow(columns).join('|')
+    // TODO: Make private properties initializing more immutable
+    this._tableBorder = '-'.repeat(header.length)
+    this._width = `${MARGIN_LEFT}${this._tableBorder}`.length
+
+    // Insert the header row with margin top by a blank line
+    return ['', this._tableBorder, header, this._tableBorder]
+  }
+
+  /**
+   * Create data records of report table
+   * @example
+   * ```
+   *  |1  |example/components/atoms/Message.vue     |         2|          0|
+   * ```
+   */
+  createDataRows(): string[] {
+    const statisticsOrderByIndegree = this.statistics.sort((l, r) => r.indegree - l.indegree)
+
+    return statisticsOrderByIndegree
+      .map((statistic: ComponentStatistics, i: number) => {
+        const columns: StatisticsRecordColumns = {
+          rowNum: { value: (i + 1).toString(), length: 3 },
+          name: { value: statistic.name, length: this._maxNameLength },
+          indegree: { value: statistic.indegree.toString(), length: this.HEADER_INDEGREE.length },
+          outdegree: { value: statistic.outdegree.toString(), length: this.HEADER_OUTDEGREE.length },
+        }
+
+        return this.createTableRow(columns).join('|')
+      })
+  }
+
+  /**
+   * Create an array consisted of each column data
+   */
+  createTableRow(columns: StatisticsRecordColumns): string[] {
     const padRecord = (text: string, max: number, align: TextAlign): string => {
       const offset = max - text.length
       return textAlign(text, offset, align)
     }
 
-    // header record
-    // TODO: May can refactor by extracting a function
-    const headerNumber = padRecord(HEADER_NUMBER, '999'.length, 'left')
-    const headerName = padRecord(HEADER_NAME, nameMaxLength, 'left')
-    const headerFrequency = padRecord(HEADER_FREQUENCY, HEADER_FREQUENCY.length, 'right')
-    const header = ['', headerNumber, headerName, headerFrequency, ''].join('|')
-    const tableBorder = '-'.repeat(header.length)
-    this._width = `${MARGIN_LEFT}${tableBorder}`.length
+    const rowNum = padRecord(columns.rowNum.value, columns.rowNum.length, 'left')
+    const nameWithPadding = padRecord(columns.name.value, columns.name.length, 'left')
+    const indegreeWithPadding = padRecord(columns.indegree.value, columns.indegree.length, 'right')
+    const outdegreeWithPadding = padRecord(columns.outdegree.value, columns.outdegree.length, 'right')
 
-    const records: string[] = []
-    // Insert margin top of table(adjusted to header line size)
-    records.push('')
-    records.push(tableBorder)
-    records.push(header)
-    records.push(tableBorder)
-
-    // data records
-    const frequentStatistics = this.statistics.sort((l, r) => r.indegree - l.indegree)
-    for (let i = 0; i < frequentStatistics.length; i++) {
-      const statistic = frequentStatistics[i]
-      const recordNumber = padRecord((i + 1).toString(), '999'.length, 'left')
-      const nameWithPadding = padRecord(statistic.name, nameMaxLength, 'left')
-      const frequencyWithPadding = padRecord(statistic.indegree.toString(), HEADER_FREQUENCY.length, 'right')
-      const record = ['', recordNumber, nameWithPadding, frequencyWithPadding, ''].join('|')
-
-      records.push(record)
-    }
-
-    records.push(tableBorder)
-    // Insert margin bottom of table
-    records.push('')
-
-    return records
+    return ['', rowNum, nameWithPadding, indegreeWithPadding, outdegreeWithPadding, '']
   }
 
   get width(): number {

@@ -1,6 +1,11 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, beforeEach, vi } from 'vitest'
 import type { GraphElement } from '../../src/printers/graph-generator'
-import { createComponentStatistics } from '../../src/printers/statistics-report-printer'
+import {
+  type ComponentStatistics,
+  createComponentStatistics,
+  StatisticsReportFormatter
+} from '../../src/printers/statistics-report-printer'
+import type { VueFileName } from '../../src/util'
 
 describe('#createComponentStatistics', () => {
   describe('when elements have a single node', () => {
@@ -91,6 +96,83 @@ describe('#createComponentStatistics', () => {
       expect(todoList?.outdegree).toBe(1)
       expect(button?.indegree).toBe(1)
       expect(button?.outdegree).toBe(0)
+    })
+  })
+})
+
+describe('StatisticsReportFormatter#createHeaderRow', () => {
+  describe('when statistics has an element', () => {
+    const statistics: ComponentStatistics[] = [
+      { name: 'components/todo/TodoList.vue', indegree: 1, outdegree: 2 },
+      { name: 'components/todo/Todo.vue', indegree: 1, outdegree: 0 },
+      { name: 'components/Card.vue', indegree: 1, outdegree: 0 }
+    ]
+    let formatter: StatisticsReportFormatter
+    beforeEach(() => {
+      formatter = new StatisticsReportFormatter(statistics)
+      // Calculating table width
+      formatter.calculateMaxNameLength()
+    })
+
+    it('should create a size adjusted header', () => {
+      const headerRow = formatter.createHeaderRow()
+
+      expect(headerRow).toHaveLength(4)
+      expect(headerRow[0]).toBe('')
+      expect(headerRow[1]).toBe('-----------------------------------------------------------')
+      expect(headerRow[2]).toBe('| # | name                         | indegree | outdegree |')
+      expect(headerRow[3]).toBe('-----------------------------------------------------------')
+    })
+  })
+})
+
+describe('StatisticsReportFormatter#createDataRows', () => {
+  describe.each([
+    { name: 'App.vue', expectation: 'App.vue  ' },
+    { name: 'example/components/Button.vue', expectation: 'example/components/Button.vue  ' },
+  ]) ('when statistics has an element', ({ name, expectation }) => {
+    const statistics: ComponentStatistics[] = [
+      { name: name as VueFileName, indegree: 1, outdegree: 2 }
+    ]
+    let formatter: StatisticsReportFormatter
+    beforeEach(() => {
+      formatter = new StatisticsReportFormatter(statistics)
+      // Calculating table width
+      formatter.calculateMaxNameLength()
+      formatter.createHeaderRow()
+    })
+
+    it('should create an array', () => {
+      const dataRows = formatter.createDataRows()
+
+      expect(dataRows).toHaveLength(1)
+      expect(dataRows[0]).toBe(`|1  |${expectation}|         1|          2|`)
+    })
+  })
+
+  describe('when statistics has some elements', () => {
+    const statistics: ComponentStatistics[] = [
+      { name: 'pages/index.vue', indegree: 0, outdegree: 1 },
+      { name: 'components/App.vue', indegree: 1, outdegree: 2 },
+      { name: 'components/Button.vue', indegree: 1, outdegree: 0 },
+      { name: 'components/Message.vue', indegree: 1, outdegree: 0 },
+    ]
+    let formatter: StatisticsReportFormatter
+    beforeEach(() => {
+      formatter = new StatisticsReportFormatter(statistics)
+      // Calculating table width
+      formatter.calculateMaxNameLength()
+      formatter.createHeaderRow()
+    })
+
+    it('should adjust table size by the longest row', () => {
+      const dataRows = formatter.createDataRows()
+
+      expect(dataRows).toHaveLength(4)
+      expect(dataRows[0]).toBe('|1  |components/App.vue      |         1|          2|')
+      expect(dataRows[1]).toBe('|2  |components/Button.vue   |         1|          0|')
+      expect(dataRows[2]).toBe('|3  |components/Message.vue  |         1|          0|')
+      expect(dataRows[3]).toBe('|4  |pages/index.vue         |         0|          1|')
     })
   })
 })
