@@ -71,16 +71,18 @@ Visualize dependencies graph, served on a local server.
 Print graph to stdout by tree format.
 
 ```
-index.vue
-  <== About.vue
-    <== Message.vue
-index.vue
-  <== App.vue
-    <== Message.vue
-    <== Button.vue
-    <== LinkButton.vue
-    <== CardList.vue
-      <== Card.vue
+
+  example/pages/home/index.vue
+    └── example/components/About.vue
+      └── example/components/atoms/Message.vue
+  example/pages/index.vue
+    └── example/components/App.vue
+      └── example/components/atoms/Message.vue
+      └── example/components/atoms/Button.vue
+      └── example/components/atoms/LinkButton.vue
+      └── example/components/CardList.vue
+        └── example/components/Card.vue
+
 ```
 
 *`report`*
