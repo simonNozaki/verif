@@ -5,6 +5,6 @@ export const sharedArgs: Record<string, ArgDef> = {
     type: 'string',
     default: 'graph',
     alias: 'f',
-    description: 'Output format. "graph" or "stdout", default is "graph"'
+    description: 'Output format: "graph", "stdout", "report". default is "graph"'
   }
 } as const

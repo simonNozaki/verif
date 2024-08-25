@@ -50,23 +50,67 @@ vurif load <vue-file> <components-dir>
 Analyze dependencies of source root file:
 
 ```bash
-vurif load <source-dir> <components-dir>
+vurif load-all <source-dir> <components-dir>
 # vurif load-all example/pages/ example/components
 ```
 
-Subcommands has only `load` currently. See also `vurif --help`
+See also `vurif --help`
 
-Vurif output dependency analysis by standard output or visual graph.
+## Options
+
+### `--format` / `-f`
+
+*`graph`* (default)
+
+Visualize dependencies graph, served on a local server.
 
 ![graph](./docs/graph-image.png)
 
-### Options
+*`stdout`*
 
-Available option sets:
+Print graph to stdout by tree format.
 
-|#|parameters|values|
-| ---- | ---- | ---- |
-|1| `format` | `stdout` , `graph` . Default: `graph` |
+```
+index.vue
+  <== About.vue
+    <== Message.vue
+index.vue
+  <== App.vue
+    <== Message.vue
+    <== Button.vue
+    <== LinkButton.vue
+    <== CardList.vue
+      <== Card.vue
+```
+
+*`report`*
+
+Report degrees of graph elements and summary.
+
+```
+Node degrees:
+
+  ----------------------------------------------------------------------
+  | # | name                                    | indegree | outdegree |
+  ----------------------------------------------------------------------
+  |1  |example/components/atoms/Message.vue     |         2|          0|
+  |2  |example/components/About.vue             |         1|          1|
+  |3  |example/components/App.vue               |         1|          4|
+  |4  |example/components/atoms/Button.vue      |         1|          0|
+  |5  |example/components/atoms/LinkButton.vue  |         1|          0|
+  |6  |example/components/CardList.vue          |         1|          1|
+  |7  |example/components/Card.vue              |         1|          0|
+  |8  |example/pages/home/index.vue             |         0|          1|
+  |9  |example/pages/index.vue                  |         0|          1|
+  ----------------------------------------------------------------------
+
+------------------------------------------------------------------------
+Summary:
+
+  🔸 Total nodes: 9
+  ➣  Total edges: 8
+
+```
 
 ## Development
 

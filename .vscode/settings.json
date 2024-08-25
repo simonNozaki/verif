@@ -1,6 +1,8 @@
 {
   "cSpell.words": [
     "citty",
+    "Indegree",
+    "Outdegree",
     "vurif"
   ],
   "typescript.tsdk": "node_modules/typescript/lib"

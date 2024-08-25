@@ -2,32 +2,11 @@ import Mustache from 'mustache'
 import fs from 'node:fs'
 import type { Printer } from '../printer'
 import type { Node } from '../node'
-import type { ElementDefinition, NodeDefinition } from 'cytoscape'
+import type { ElementDefinition } from 'cytoscape'
 import { GraphServer } from './graph-server/server'
 import type { ComponentRegistry } from '../registry'
-import { type VueFileName, toStaticPath } from '../util'
-
-/**
- * Create data representing a node
- */
-function createNodeDef(name: VueFileName): NodeDefinition {
-  return {
-    data: { id: name, }
-  }
-}
-
-/**
- * Create data representing a edge connecting nodes
- */
-function createEdgeDef(source: VueFileName, target: VueFileName): NodeDefinition {
-  return {
-    data: {
-      id: `${source}-${target}`,
-      source: source,
-      target: target
-    }
-  }
-}
+import { toStaticPath } from '../util'
+import { CytoscapeGraphStrategy, GraphGenerator } from './graph-generator'
 
 function writeJavaScript(data: ElementDefinition[]): void {
   // TODO: ファイルの読み書きを待たない
@@ -48,10 +27,14 @@ function writeJavaScript(data: ElementDefinition[]): void {
 
 export class VisualGraphPrinter implements Printer {
   private completedHandler: () => void
-  constructor(private registry: ComponentRegistry) {}
+  private graphGenerator: GraphGenerator<'cytoscape'>
+
+  constructor(registry: ComponentRegistry) {
+    this.graphGenerator = new GraphGenerator(registry, CytoscapeGraphStrategy)
+  }
 
   print(node: Node): void {
-    const elements = this.createGraphElement(node)
+    const elements = this.graphGenerator.generate(node)
 
     writeJavaScript(elements)
 
@@ -60,7 +43,7 @@ export class VisualGraphPrinter implements Printer {
   }
 
   printAll(nodes: Node[]): void {
-    const elements = nodes.flatMap((node) => this.createGraphElement(node))
+    const elements = this.graphGenerator.generateAll(nodes)
 
     writeJavaScript(elements)
 
@@ -71,28 +54,5 @@ export class VisualGraphPrinter implements Printer {
   onCompleted(handler: () => void): this {
     this.completedHandler = handler
     return this
-  }
-
-  /**
-   * Create graph elements(nodes and edges).
-   */
-  createGraphElement(node: Node): ElementDefinition[] {
-    const name = this.registry.get(node.name)
-    const nodeDef = createNodeDef(name)
-
-    if (!node.hasEdges()) return [nodeDef]
-
-    const childNodeDefs = Object.entries(node.edges).map((edge: [name: string, n: Node]) => {
-      const childNode = edge[1]
-      // create a edge leading to child node
-      const parentName = this.registry.get(node.name)
-      const childName = this.registry.get(childNode.name)
-      const edgeDef = createEdgeDef(parentName, childName)
-      const childNodeDefs = this.createGraphElement(childNode)
-
-      return [edgeDef, ...childNodeDefs]
-    })
-
-    return [...childNodeDefs, nodeDef].flat()
   }
 }
