@@ -1,4 +1,3 @@
-import Mustache from 'mustache'
 import fs from 'node:fs'
 import type { Printer } from '../printer'
 import type { Node } from '../node'
@@ -7,23 +6,7 @@ import { GraphServer } from './graph-server/server'
 import type { ComponentRegistry } from '../registry'
 import { toStaticPath } from '../util'
 import { CytoscapeGraphStrategy, GraphGenerator } from './graph-generator'
-
-function writeJavaScript(data: ElementDefinition[]): void {
-  // TODO: ファイルの読み書きを待たない
-  const template = fs.readFileSync(toStaticPath('cy.client.js.template'))
-
-  const output = Mustache.render(template.toString(), {
-    elements: JSON.stringify(data)
-  })
-
-  const jsPath = toStaticPath('cy.client.js')
-
-  if (fs.existsSync(jsPath)) {
-    fs.rmSync(jsPath)
-  }
-
-  fs.writeFileSync(jsPath, output, { encoding: 'utf-8' })
-}
+import consola from 'consola'
 
 export class VisualGraphPrinter implements Printer {
   private completedHandler: () => void
@@ -36,23 +19,34 @@ export class VisualGraphPrinter implements Printer {
   print(node: Node): void {
     const elements = this.graphGenerator.generate(node)
 
-    writeJavaScript(elements)
-
-    this.completedHandler()
-    new GraphServer().start()
+    this.serve(elements)
   }
 
   printAll(nodes: Node[]): void {
     const elements = this.graphGenerator.generateAll(nodes)
 
-    writeJavaScript(elements)
-
-    this.completedHandler()
-    new GraphServer().start()
+    this.serve(elements)
   }
 
   onCompleted(handler: () => void): this {
     this.completedHandler = handler
     return this
+  }
+
+  private serve(elements: ElementDefinition[]): void {
+    const elementTexts = JSON.stringify(elements)
+    const jsonPath = toStaticPath('data.json')
+
+    fs.writeFile(jsonPath, elementTexts, { encoding: 'utf-8' }, (err) => {
+      if (err) {
+        consola.error(err.message)
+        throw err
+      }
+
+      if (this.completedHandler) {
+        this.completedHandler()
+      }
+      new GraphServer().start()
+    })
   }
 }
