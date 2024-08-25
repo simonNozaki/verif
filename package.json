@@ -30,7 +30,8 @@
     "build": "unbuild",
     "dev": "npx jiti playground/cli.ts",
     "lint": "biome lint",
-    "test": "vitest"
+    "test": "vitest",
+    "test:ui": "vitest --ui"
   },
   "dependencies": {
     "citty": "^0.1.6",
@@ -47,11 +48,16 @@
     "@types/mock-fs": "^4.13.4",
     "@types/mustache": "^4.2.5",
     "@types/node": "^20.14.12",
+    "@vitest/ui": "^2.0.5",
     "jiti": "^1.21.6",
     "mock-fs": "^5.2.0",
     "typescript": "^5.5.4",
     "vitest": "^2.0.5"
   },
   "packageManager": "pnpm@9.6.0",
-  "keywords": ["Vue", "Nuxt", "CLI"]
+  "keywords": [
+    "Vue",
+    "Nuxt",
+    "CLI"
+  ]
 }
