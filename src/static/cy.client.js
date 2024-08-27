@@ -1,12 +1,10 @@
-var elements = [];
-var cy;
-
 fetch('http://localhost:38081/data.json')
   .then((response) => {
     response.json().then((value) => {
-      cy = cytoscape({
+      var elements = value && Array.isArray(value) ? value : []
+      cytoscape({
         container: document.getElementById('cy'),
-        elements: value,
+        elements,
         style: [
           {
             selector: 'node',
