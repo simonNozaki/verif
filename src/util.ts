@@ -70,3 +70,16 @@ export function textAlign(text: string, offset: number, align: TextAlign): strin
 
   return align === 'left' ? `${text}${padding}` : `${padding}${text}`
 }
+
+type Concatenation<
+  Strs extends string[],
+  Separator extends string = '',
+  Result extends string = ''
+> = Strs extends [(infer Head extends string), ...(infer Rest extends string[])]
+? Result extends ''
+  ? Concatenation<Rest, Separator, `${Head}`>
+  : Concatenation<Rest, Separator, `${Result}${Separator}${Head}`>
+: Result
+
+type KebabCase<Strs extends string[]> = Concatenation<Strs, '-'>
+
