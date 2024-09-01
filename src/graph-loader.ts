@@ -65,7 +65,6 @@ export class GraphLoader {
    * Return AST of a Node reading a relevant file
    */
   private getAstOrNull(node: Node): ASTElement | undefined {
-    // Check matching by kebab-case or UpperCamelCase
     const filePath = this.searchFilePath(node.name)
     if (!filePath) {
       consola.warn(`${node.name} does not found in directory`)
@@ -85,7 +84,6 @@ export class GraphLoader {
    * Get file path matching by `camelized` or `kebabified` key of original component name
    */
   searchFilePath(name: string): VueFileName | undefined {
-    // Check matching by kebab-case or UpperCamelCase
     const matchedKey = Array.from(
       [toUpperCamelCase(name), toKebabCase(name), name]
     ).find((n) => !!this.registry.get(n))
