@@ -70,3 +70,9 @@ export function textAlign(text: string, offset: number, align: TextAlign): strin
 
   return align === 'left' ? `${text}${padding}` : `${padding}${text}`
 }
+
+export type KebabCase<S extends string> = S extends `${infer S1}${infer S2}`
+? S2 extends Uncapitalize<S2>
+  ? `${Uncapitalize<S1>}${KebabCase<S2>}`
+  : `${Uncapitalize<S1>}-${KebabCase<S2>}`
+: S

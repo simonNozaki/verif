@@ -8,7 +8,7 @@ afterEach(() => {
   mockFs.restore()
 })
 
-describe('GraphLoader', () => {
+describe('GraphLoader#load', () => {
   describe('when the node name does not map to any element', () => {
     const registry = new MockComponentRegistry({})
     const loader = new GraphLoader(registry)
@@ -147,6 +147,162 @@ describe('GraphLoader', () => {
       expect(root.edges.App.edges.DeleteButton.edges.Button).toBeDefined()
       expect(root.edges.App.edges.UpdateButton).toBeDefined()
       expect(root.edges.App.edges.UpdateButton.edges.Button).toBeDefined()
+    })
+  })
+})
+
+describe('GraphLoader#searchFilePath', () => {
+  describe('when components name is camel case', () => {
+    const registry = new MockComponentRegistry({
+      'App': 'components/App.vue',
+      'AddCardButton': 'components/AddCardButton.vue',
+      'DeleteCardButton': 'components/DeleteCardButton.vue',
+      'pages/index.vue': 'pages/index.vue'
+    })
+    beforeEach(() => {
+      mockFs({
+        'components': {
+          'App.vue': `
+<template>
+  <section>
+    <p>Add card</p>
+    <AddCardButton />
+    <p>Delete card</p>
+    <DeleteCardButton />
+  </section>
+</template>
+`
+        },
+        'pages': {
+          'index.vue': '<template><App /></template>'
+        }
+      })
+    })
+    const loader = new GraphLoader(registry)
+
+    it('should match in the registry', () => {
+      const addCardButton = loader.searchFilePath('AddCardButton')
+      const deleteCardButton = loader.searchFilePath('DeleteCardButton')
+
+      expect(addCardButton).toBe('components/AddCardButton.vue')
+      expect(deleteCardButton).toBe('components/DeleteCardButton.vue')
+    })
+  })
+
+  describe('when components name is kebab case', () => {
+    const registry = new MockComponentRegistry({
+      'app': 'components/app.vue',
+      'add-card-button': 'components/add-card-button.vue',
+      'delete-card-button': 'components/delete-card-button.vue',
+      'pages/index.vue': 'pages/index.vue'
+    })
+    beforeEach(() => {
+      mockFs({
+        'components': {
+          'App.vue': `
+<template>
+  <section>
+    <p>Add card</p>
+    <add-card-button />
+    <p>Delete card</p>
+    <delete-card-button />
+  </section>
+</template>
+`
+        },
+        'pages': {
+          'index.vue': '<template><app /></template>'
+        }
+      })
+    })
+    const loader = new GraphLoader(registry)
+
+    it('should match in the registry', () => {
+      const addCardButton = loader.searchFilePath('add-card-button')
+      const deleteCardButton = loader.searchFilePath('delete-card-button')
+
+      expect(addCardButton).toBe('components/add-card-button.vue')
+      expect(deleteCardButton).toBe('components/delete-card-button.vue')
+    })
+  })
+
+  describe('when components name in templates is camel case and files are kebab case', () => {
+    const registry = new MockComponentRegistry({
+      'app': 'components/app.vue',
+      'add-card-button': 'components/add-card-button.vue',
+      'delete-card-button': 'components/delete-card-button.vue',
+      'pages/index.vue': 'pages/index.vue'
+    })
+    beforeEach(() => {
+      mockFs({
+        'components': {
+          'App.vue': `
+<template>
+  <section>
+    <p>Add card</p>
+    <AddCardButton />
+    <p>Delete card</p>
+    <DeleteCardButton />
+  </section>
+</template>
+`
+        },
+        'pages': {
+          'index.vue': '<template><App /></template>'
+        }
+      })
+    })
+    const loader = new GraphLoader(registry)
+
+    it('should match in the registry', () => {
+      // Loader specify node name by names in template
+      const app = loader.searchFilePath('App')
+      const addCardButton = loader.searchFilePath('AddCardButton')
+      const deleteCardButton = loader.searchFilePath('DeleteCardButton')
+
+      expect(app).toBe('components/app.vue')
+      expect(addCardButton).toBe('components/add-card-button.vue')
+      expect(deleteCardButton).toBe('components/delete-card-button.vue')
+    })
+  })
+
+  describe('when components name in templates is kebab case and files are camel case', () => {
+    const registry = new MockComponentRegistry({
+      'App': 'components/App.vue',
+      'AddCardButton': 'components/AddCardButton.vue',
+      'DeleteCardButton': 'components/DeleteCardButton.vue',
+      'pages/index.vue': 'pages/index.vue'
+    })
+    beforeEach(() => {
+      mockFs({
+        'components': {
+          'App.vue': `
+<template>
+  <section>
+    <p>Add card</p>
+    <add-card-button />
+    <p>Delete card</p>
+    <delete-card-button />
+  </section>
+</template>
+`
+        },
+        'pages': {
+          'index.vue': '<template><app /></template>'
+        }
+      })
+    })
+    const loader = new GraphLoader(registry)
+
+    it('should match in the registry', () => {
+      // Loader specify node name by names in template
+      const app = loader.searchFilePath('app')
+      const addCardButton = loader.searchFilePath('add-card-button')
+      const deleteCardButton = loader.searchFilePath('delete-card-button')
+
+      expect(app).toBe('components/App.vue')
+      expect(addCardButton).toBe('components/AddCardButton.vue')
+      expect(deleteCardButton).toBe('components/DeleteCardButton.vue')
     })
   })
 })
