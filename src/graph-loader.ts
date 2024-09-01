@@ -3,7 +3,7 @@ import { type Edge, Node } from './node'
 import { readFileSync } from 'node:fs'
 import { parseComponent, compile, type ASTNode, type ASTElement } from 'vue-template-compiler'
 import { consola } from 'consola'
-import type { VueFileName } from './util'
+import type { KebabCase, VueFileName } from './util'
 
 /**
  * Convert a text from kebab-case to CamelCase
@@ -24,11 +24,13 @@ function toUpperCamelCase<S extends string>(text: S): Capitalize<S> {
 
 /**
  * Convert a text from CamelCase to kebab-case
+ * NOTE: if required this from other files, move to util
  */
-function toKebabCase(text: string): string {
+function toKebabCase<S extends string>(text: S): KebabCase<S> {
+  // Force casting `KebabCase<S>` as result must be kebab-case
   return text
     .replace(/^ *?[A-Z]/, (str) => str.toLowerCase())
-    .replace(/ *?[A-Z]/g, (str) => `-${str.replace(/ /g, '').toLowerCase()}`)
+    .replace(/ *?[A-Z]/g, (str) => `-${str.replace(/ /g, '').toLowerCase()}`) as KebabCase<S>
 }
 
 /**
