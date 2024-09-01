@@ -10,12 +10,9 @@ import type { KebabCase, VueFileName } from './util'
  */
 function toUpperCamelCase<S extends string>(text: S): Capitalize<S> {
   const capitalizeWord = (word: string): Capitalize<S> => {
-    let capitalized = ''
-    for (let i = 0; i< word.length; i++) {
-      const char = i === 0 ? word[i].toUpperCase() : word[i]
-      capitalized += char
-    }
-    return capitalized as Capitalize<S>
+    return Array.from(word)
+      .map((char, index) => index === 0 ? char.toUpperCase() : char.toLowerCase())
+      .reduce((result, char) => result + char) as Capitalize<S>
   }
 
   // from kebab-case
