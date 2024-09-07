@@ -2,7 +2,7 @@ import { defineCommand } from 'citty'
 import { Node } from '../node'
 import { setupComponentRegistry } from '../registry'
 import { vueFileNameOrThrow } from '../util'
-import { createPrinter, getPrinterType } from '../printer'
+import { createPrinter, PrinterFormat } from '../printer'
 import { GraphLoader } from '../graph-loader'
 import { consola } from 'consola'
 import { colorize } from 'consola/utils'
@@ -29,7 +29,6 @@ export default defineCommand({
   run({ args }) {
     const fileName = args.pageFileName
     const componentsDir = args.componentsDir
-    const printerType = getPrinterType(args.format as string)
     const vueFileName = vueFileNameOrThrow(fileName)
 
     consola.info(
@@ -44,7 +43,8 @@ export default defineCommand({
     const rootNode = new Node(vueFileName)
     new GraphLoader(registry).load(rootNode)
 
-    createPrinter(registry, printerType)
+    const printerFormat = new PrinterFormat(args.format as string)
+    createPrinter(registry, printerFormat.type)
       .onCompleted(() => {
         consola.success(colorize('green', `Analysis succeeded for: ${vueFileName}`))
       })
