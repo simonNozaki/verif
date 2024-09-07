@@ -1,0 +1,35 @@
+name: auto-test
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  auto_test:
+    name: 'Auto test'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 'Setup pnpm'
+        uses: pnpm/action-setup@v4
+
+      - name: 'Setup: node.js'
+        uses: actions/setup-node@v4
+        with:
+          cache: pnpm
+          node-version: 18      
+
+      - name: 'Install: node.js'
+        run: pnpm install
+
+      - name: 'Lint'
+        run: pnpm lint
+
+      - name: 'Auto tests'
+        run: pnpm test
