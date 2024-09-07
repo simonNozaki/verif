@@ -5,13 +5,21 @@ import { ConsolePrinter, VisualGraphPrinter, StatisticsReportPrinter } from './p
 type PrinterType = 'stdout' | 'graph' | 'report'
 
 /**
- * Assert and safe cast to `PrinterType`
+ * Printer type formatter, set default as 'graph'
  */
-export function getPrinterType(type: string): PrinterType {
-  if (type === 'stdout' || type === 'graph' || type === 'report') {
-    return type as PrinterType
+export class PrinterFormat {
+  private readonly types = ['stdout', 'graph', 'report']
+  private readonly _type: PrinterType
+
+  constructor (private _value: string | undefined) {
+    this._type = this.types.includes(this._value)
+      ? (this._value as PrinterType)
+      : 'graph'    
   }
-  return 'graph'
+
+  get type(): PrinterType {
+    return this._type
+  }
 }
 
 export interface Printer {
@@ -23,7 +31,7 @@ export interface Printer {
 /**
  * Factory method of `Printer` s.
  */
-export function createPrinter(registry: ComponentRegistry, type: PrinterType | undefined = 'stdout'): Printer {
+export function createPrinter(registry: ComponentRegistry, type: PrinterType): Printer {
   let printerConstructor: new (registry: ComponentRegistry) => Printer
   switch (type) {
     case 'graph':

@@ -1,5 +1,5 @@
 import { defineCommand } from 'citty'
-import { createPrinter, getPrinterType } from '../printer'
+import { createPrinter, PrinterFormat } from '../printer'
 import { consola } from 'consola'
 import { colorize } from 'consola/utils'
 import { readDirDeepSyncAsPaths, setupComponentRegistry } from '../registry'
@@ -29,7 +29,6 @@ export default defineCommand({
   run({ args }) {
     const viewsDir = args.viewsDir
     const componentsDir = args.componentsDir
-    const printerType = getPrinterType(args.format as string)
 
     consola.info(
       `Traversing "${colorize('blue', viewsDir)}" associated with "${colorize('blue', componentsDir)}"`
@@ -49,7 +48,8 @@ export default defineCommand({
       rootNodes.push(rootNode)
     }
 
-    createPrinter(registry, printerType)
+    const printerFormat = new PrinterFormat(args.format as string)
+    createPrinter(registry, printerFormat.type)
       .onCompleted(() => {
         consola.success(colorize('green', `Analysis succeeded for: ${viewsDir}`))
       })
